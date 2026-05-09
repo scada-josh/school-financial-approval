@@ -12,6 +12,10 @@ __pycache__/
 !.env.example
 *.json.key
 service-account*.json
+*serviceaccount*.json
+gen-lang-client-*.json
+*-d38efeabd270.json
+*-credentials.json
 
 # Data & Uploads
 uploads/temp/*
