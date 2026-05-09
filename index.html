@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Financial Approval Project</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           School Financial Approval - Single Page App
+           Claude.com Inspired Design
+           ============================================ */
+        :root {
+            --primary: #cc785c;
+            --primary-active: #a9583e;
+            --canvas: #faf9f5;
+            --surface-soft: #f5f0e8;
+            --surface-card: #efe9de;
+            --surface-dark: #181715;
+            --hairline: #e6dfd8;
+            --ink: #141413;
+            --body: #3d3d3a;
+            --muted: #6c6a64;
+            --on-primary: #ffffff;
+            --success: #5db872;
+            --warning: #d4a017;
+            --error: #c64545;
+            --info: #3b82f6;
+            --accent-teal: #5db8a6;
+            --accent-amber: #e8a55a;
+            --space-xs: 8px;
+            --space-sm: 12px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-xxl: 48px;
+            --space-section: 64px;
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--canvas); color: var(--body); line-height: 1.55; font-size: 16px; min-height: 100vh; }
+        .font-display { font-family: 'Cormorant Garamond', serif; font-weight: 400; letter-spacing: -0.02em; line-height: 1.1; color: var(--ink); }
+        
+        /* Nav */
+        .nav { position: fixed; top: 0; left: 0; right: 0; height: 64px; background: var(--canvas); border-bottom: 1px solid var(--hairline); z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 var(--space-xl); }
+        .nav-brand { display: flex; align-items: center; gap: var(--space-sm); }
+        .nav-logo { width: 32px; height: 32px; background: var(--primary); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; }
+        .nav-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 500; color: var(--ink); }
+        .nav-menu { display: flex; align-items: center; gap: var(--space-xs); }
+        .nav-item { padding: 8px 16px; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; color: var(--muted); text-decoration: none; transition: all 0.2s; cursor: pointer; border: none; background: none; font-family: 'Inter', sans-serif; }
+        .nav-item:hover { color: var(--ink); background: var(--surface-soft); }
+        .nav-item.active { color: var(--ink); background: var(--surface-card); }
+        .main { max-width: 1400px; margin: 0 auto; padding: 96px var(--space-xl) var(--space-xxl); }
+        
+        /* Page Sections */
+        .page { display: none; }
+        .page.active { display: block; }
+        
+        /* Hero */
+        .hero { padding: var(--space-section) 0; text-align: center; max-width: 800px; margin: 0 auto; }
+        .hero-title { font-size: 56px; margin-bottom: var(--space-md); }
+        .hero-subtitle { font-size: 18px; color: var(--muted); margin-bottom: var(--space-xl); }
+        
+        /* Stats */
+        .stats-bar { display: flex; gap: var(--space-xl); padding: var(--space-lg) 0; margin-bottom: var(--space-xl); border-bottom: 1px solid var(--hairline); }
+        .stat { display: flex; flex-direction: column; gap: 4px; }
+        .stat-value { font-family: 'Cormorant Garamond', serif; font-size: 36px; color: var(--ink); line-height: 1; }
+        .stat-label { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
+        
+        /* Feature Cards */
+        .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); margin: var(--space-xl) 0; }
+        .feature-card { background: var(--surface-card); border-radius: var(--radius-lg); padding: var(--space-xl); border: 1px solid transparent; transition: all 0.2s; cursor: pointer; }
+        .feature-card:hover { border-color: var(--hairline); transform: translateY(-2px); }
+        .feature-icon { width: 48px; height: 48px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--primary), var(--primary-active)); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; margin-bottom: var(--space-md); }
+        .feature-title { font-size: 18px; font-weight: 500; color: var(--ink); margin-bottom: var(--space-xs); }
+        .feature-desc { font-size: 14px; color: var(--muted); line-height: 1.5; }
+        
+        /* Cards */
+        .card { background: var(--surface-card); border-radius: var(--radius-lg); padding: var(--space-xl); border: 1px solid var(--hairline); }
+        .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-lg); }
+        .card-title { font-size: 18px; font-weight: 500; color: var(--ink); }
+        
+        /* Buttons */
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; height: 40px; border-radius: var(--radius-md); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
+        .btn-primary { background: var(--primary); color: var(--on-primary); }
+        .btn-primary:hover { background: var(--primary-active); }
+        .btn-secondary { background: var(--canvas); color: var(--ink); border: 1px solid var(--hairline); }
+        .btn-secondary:hover { background: var(--surface-soft); }
+        .btn-sm { padding: 6px 14px; height: 32px; font-size: 13px; }
+        .btn-danger { background: var(--error); color: white; }
+        .btn-icon { width: 32px; height: 32px; padding: 0; border-radius: var(--radius-md); justify-content: center; background: var(--canvas); border: 1px solid var(--hairline); color: var(--muted); cursor: pointer; }
+        .btn-icon:hover { background: var(--surface-soft); color: var(--ink); }
+        
+        /* TOR Manager */
+        .project-selector { display: flex; gap: var(--space-sm); overflow-x: auto; padding-bottom: var(--space-sm); margin-bottom: var(--space-lg); flex-wrap: wrap; }
+        .project-chip { padding: 8px 16px; background: var(--canvas); border: 1px solid var(--hairline); border-radius: 20px; cursor: pointer; font-size: 14px; color: var(--muted); transition: all 0.2s; white-space: nowrap; }
+        .project-chip:hover { border-color: var(--primary); }
+        .project-chip.active { background: linear-gradient(135deg, var(--primary), var(--primary-active)); color: white; border-color: transparent; font-weight: 500; }
+        .section-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-sm); }
+        .section-item { background: var(--canvas); border: 1px solid var(--hairline); border-radius: var(--radius-md); padding: var(--space-md); display: flex; align-items: center; justify-content: space-between; transition: all 0.2s; }
+        .section-item:hover { border-color: var(--primary); }
+        .section-item.enabled { border-color: var(--success); background: rgba(93, 184, 114, 0.05); }
+        .section-name { font-size: 14px; }
+        .toggle { position: relative; width: 44px; height: 24px; background: var(--hairline); border-radius: 9999px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+        .toggle.active { background: var(--success); }
+        .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: all 0.2s; }
+        .toggle.active::after { left: 22px; }
+        
+        /* Project List */
+        .project-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+        .project-item { background: var(--canvas); border: 1px solid var(--hairline); border-radius: var(--radius-lg); padding: var(--space-md); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s; }
+        .project-item:hover { border-color: var(--primary); }
+        .project-item.active { border-color: var(--primary); background: var(--surface-soft); }
+        .project-info { display: flex; align-items: center; gap: var(--space-md); }
+        .project-icon { width: 40px; height: 40px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--primary), var(--primary-active)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
+        .project-name { font-weight: 500; color: var(--ink); }
+        .project-meta { font-size: 13px; color: var(--muted); }
+        
+        /* Project Tracker Table */
+        .table-container { background: var(--surface-card); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--hairline); }
+        .project-table { width: 100%; border-collapse: collapse; }
+        .project-table thead { background: var(--surface-soft); }
+        .project-table th { padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--hairline); }
+        .project-table td { padding: 14px 16px; border-bottom: 1px solid var(--hairline); font-size: 14px; }
+        .project-table tbody tr:hover { background: var(--surface-soft); }
+        .project-table tbody tr:last-child td { border-bottom: none; }
+        .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600; }
+        .status-badge.approve { background: rgba(93, 184, 114, 0.15); color: var(--success); }
+        .status-badge.reject { background: rgba(198, 69, 69, 0.15); color: var(--error); }
+        .status-badge.not-started { background: rgba(108, 106, 100, 0.1); color: var(--muted); }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .status-dot.approve { background: var(--success); }
+        .status-dot.reject { background: var(--error); }
+        .status-dot.not-started { background: var(--muted); }
+        
+        /* Filter Bar */
+        .filter-bar { display: flex; gap: var(--space-md); margin-bottom: var(--space-xl); align-items: center; flex-wrap: wrap; }
+        .filter-select { padding: 8px 14px; background: var(--canvas); border: 1px solid var(--hairline); border-radius: var(--radius-md); color: var(--ink); font-family: 'Inter', sans-serif; font-size: 14px; min-width: 180px; }
+        .filter-select:focus { outline: none; border-color: var(--primary); }
+        
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(24, 23, 21, 0.6); display: none; align-items: center; justify-content: center; z-index: 2000; padding: var(--space-xl); }
+        .modal-overlay.active { display: flex; }
+        .modal { background: var(--canvas); border-radius: var(--radius-xl); padding: var(--space-xxl); max-width: 600px; width: 100%; max-height: 85vh; overflow-y: auto; }
+        .modal-header { margin-bottom: var(--space-xl); }
+        .modal-title { font-size: 28px; margin-bottom: var(--space-xs); }
+        .modal-subtitle { color: var(--muted); }
+        .form-group { margin-bottom: var(--space-lg); }
+        .form-label { display: block; font-size: 14px; font-weight: 500; margin-bottom: var(--space-xs); }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 10px 14px; background: var(--canvas); border: 1px solid var(--hairline); border-radius: var(--radius-md); color: var(--ink); font-family: 'Inter', sans-serif; font-size: 15px; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.15); }
+        .form-textarea { min-height: 80px; resize: vertical; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+        .form-actions { display: flex; gap: var(--space-md); justify-content: flex-end; margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 1px solid var(--hairline); }
+        
+        /* Toast */
+        .toast { position: fixed; bottom: var(--space-xl); right: var(--space-xl); padding: var(--space-md) var(--space-lg); background: var(--surface-dark); color: white; border-radius: var(--radius-lg); font-size: 14px; z-index: 3000; transform: translateY(100px); opacity: 0; transition: all 0.3s; }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--error); }
+        
+        /* Loading */
+        .loading { display: flex; align-items: center; justify-content: center; padding: var(--space-xxl); color: var(--muted); }
+        .spinner { width: 24px; height: 24px; border: 2px solid var(--hairline); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-right: var(--space-sm); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Empty State */
+        .empty-state { text-align: center; padding: var(--space-xxl); color: var(--muted); }
+        .empty-state-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--ink); margin-bottom: var(--space-sm); }
+        
+        /* Two Column Layout */
+        .two-column { display: grid; grid-template-columns: 380px 1fr; gap: var(--space-xl); align-items: start; }
+        
+        /* Callout */
+        .callout-coral { background: var(--primary); color: var(--on-primary); border-radius: var(--radius-lg); padding: var(--space-xxl); text-align: center; margin: var(--space-section) 0; }
+        .callout-coral h2 { color: var(--on-primary); margin-bottom: var(--space-md); }
+        .callout-coral p { opacity: 0.9; margin-bottom: var(--space-xl); }
+        .callout-coral .btn-secondary { background: var(--canvas); color: var(--ink); border: none; }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .feature-grid { grid-template-columns: repeat(2, 1fr); }
+            .two-column { grid-template-columns: 1fr; }
+            .hero-title { font-size: 42px; }
+        }
+        @media (max-width: 768px) {
+            .main { padding: 80px var(--space-md) var(--space-xl); }
+            .nav { padding: 0 var(--space-md); }
+            .nav-menu { display: none; }
+            .hero-title { font-size: 32px; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .stats-bar { flex-wrap: wrap; gap: var(--space-lg); }
+            .section-grid { grid-template-columns: 1fr; }
+            .project-item { flex-direction: column; align-items: flex-start; gap: var(--space-sm); }
+            .form-row { grid-template-columns: 1fr; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-brand">
+            <img src="assets/images/logos/logo.png" alt="Logo" style="height: 36px; width: auto;">
+            <div class="nav-title">School Financial Approval Project</div>
+        </div>
+        <div class="nav-menu">
+            <button class="nav-item active" onclick="navigateTo('home')">หน้าหลัก</button>
+            <button class="nav-item" onclick="navigateTo('tor')">TOR Manager</button>
+            <button class="nav-item" onclick="navigateTo('tracker')">ติดตามสถานะ</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+        
+        <!-- ============================================
+             PAGE 1: HOME / DASHBOARD
+             ============================================ -->
+        <div id="page-home" class="page active">
+            <section class="hero">
+                <img src="assets/images/logos/logo.png" alt="School Financial Approval Project Logo" style="height: 120px; width: auto; margin-bottom: var(--space-lg);">
+                <h1 class="font-display hero-title">School Financial<br>Approval Project</h1>
+                <p class="hero-subtitle">ระบบบริหารงบประมาณและอนุมัติโครงการสำหรับสถานศึกษา<br>รองรับการตรวจสอบความครบถ้วนของ TOR, ตรวจสอบงบประมาณ และ ติดตามสถานะโครงการ<br>และเพิ่มประสิทธิภาพการดำเนินงานด้วย AI และระบบอัตโนมัติ (Automation)</p>
+            </section>
+
+            <div class="stats-bar">
+                <div class="stat">
+                    <div class="stat-value" id="home-stat-total">-</div>
+                    <div class="stat-label">โครงการทั้งหมด</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="home-stat-approved">-</div>
+                    <div class="stat-label">อนุมัติแล้ว</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="home-stat-pending">-</div>
+                    <div class="stat-label">รอดำเนินการ</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="home-stat-tor-types">-</div>
+                    <div class="stat-label">ประเภทโครงการ</div>
+                </div>
+            </div>
+
+            <section style="margin-bottom: var(--space-section);">
+                <h2 class="font-display" style="font-size: 32px; margin-bottom: var(--space-lg);">ฟีเจอร์หลัก</h2>
+                <div class="feature-grid">
+                    <div class="feature-card" onclick="navigateTo('tor')">
+                        <div class="feature-icon">📋</div>
+                        <div class="feature-title">TOR Manager</div>
+                        <div class="feature-desc">จัดการประเภทโครงการและหัวข้อ TOR เปิด/ปิดหัวข้อตามความต้องการ</div>
+                    </div>
+                    <div class="feature-card" onclick="navigateTo('tracker')">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--accent-amber), #c98a3f);">📊</div>
+                        <div class="feature-title">ติดตามสถานะโครงการ</div>
+                        <div class="feature-desc">ติดตามสถานะการอนุมัติโครงการ ตามปีงบประมาณ พร้อมค้นหาและกรองข้อมูล</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #8b7cb3, #6b5b93);">📈</div>
+                        <div class="feature-title">รายงานและสถิติ</div>
+                        <div class="feature-desc">ดูสถิติการใช้งาน เปรียบเทียบประเภทโครงการ และส่งออกรายงาน</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="callout-coral">
+                <h2 class="font-display">เริ่มจัดการโครงการของคุณ</h2>
+                <p>เพิ่มโครงการใหม่และติดตามสถานะการอนุมัติได้ทันที</p>
+                <button class="btn btn-secondary" onclick="navigateTo('tracker')">เปิดติดตามสถานะ →</button>
+            </div>
+        </div>
+
+        <!-- ============================================
+             PAGE 2: TOR MANAGER
+             ============================================ -->
+        <div id="page-tor" class="page">
+            <section style="padding: var(--space-xl) 0;">
+                <h1 class="font-display" style="font-size: 40px; margin-bottom: var(--space-md);">TOR Manager</h1>
+                <p style="color: var(--muted); font-size: 18px;">จัดการประเภทโครงการและหัวข้อ TOR สำหรับโครงการภาครัฐ</p>
+            </section>
+
+            <div class="stats-bar">
+                <div class="stat">
+                    <div class="stat-value" id="tor-stat-projects">-</div>
+                    <div class="stat-label">ประเภทโครงการ</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="tor-stat-sections">-</div>
+                    <div class="stat-label">หัวข้อ TOR</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="tor-stat-avg">-</div>
+                    <div class="stat-label">หัวข้อเฉลี่ย</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="tor-stat-active">-</div>
+                    <div class="stat-label">หัวข้อที่ใช้</div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
+                <h2 class="font-display" style="font-size: 24px;">รายการประเภทโครงการ</h2>
+                <button class="btn btn-primary btn-sm" onclick="showAddTorModal()">+ เพิ่มประเภท</button>
+            </div>
+
+            <div class="two-column">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">ประเภทโครงการ</div>
+                        <span style="font-size: 13px; color: var(--muted);">คลิกเพื่อจัดการหัวข้อ</span>
+                    </div>
+                    <div id="tor-project-list" class="project-list">
+                        <div class="loading"><div class="spinner"></div>กำลังโหลด...</div>
+                    </div>
+                </div>
+
+                <div id="tor-section-panel">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title" id="selected-project-name">เลือกประเภทโครงการ</div>
+                            </div>
+                            <div id="section-actions" style="display: none;">
+                                <button class="btn btn-sm btn-secondary" onclick="selectAllTorSections(true)">เลือกทั้งหมด</button>
+                                <button class="btn btn-sm btn-secondary" onclick="selectAllTorSections(false)">ยกเลิกทั้งหมด</button>
+                            </div>
+                        </div>
+                        <div id="tor-section-content">
+                            <div class="empty-state">
+                                <div class="empty-state-title font-display">เลือกประเภทโครงการ</div>
+                                <p>คลิกที่ประเภทโครงการด้านซ้ายเพื่อจัดการหัวข้อ TOR</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================
+             PAGE 3: PROJECT TRACKER
+             ============================================ -->
+        <div id="page-tracker" class="page">
+            <section style="padding: var(--space-xl) 0;">
+                <h1 class="font-display" style="font-size: 40px; margin-bottom: var(--space-md);">ติดตามสถานะโครงการ</h1>
+                <p style="color: var(--muted); font-size: 18px;">ดูสถานะการอนุมัติโครงการทั้งหมด ตามปีงบประมาณ</p>
+            </section>
+
+            <div class="stats-bar">
+                <div class="stat">
+                    <div class="stat-value" id="tracker-stat-total">-</div>
+                    <div class="stat-label">โครงการทั้งหมด</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="tracker-stat-approved">-</div>
+                    <div class="stat-label">อนุมัติแล้ว</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="tracker-stat-pending">-</div>
+                    <div class="stat-label">รอดำเนินการ</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="tracker-stat-rejected">-</div>
+                    <div class="stat-label">ไม่อนุมัติ</div>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <select class="filter-select" id="filter-year" onchange="renderTrackerTable()">
+                    <option value="">ทุกปีงบประมาณ</option>
+                </select>
+                <select class="filter-select" id="filter-type" onchange="renderTrackerTable()">
+                    <option value="">ทุกประเภท</option>
+                </select>
+                <select class="filter-select" id="filter-status" onchange="renderTrackerTable()">
+                    <option value="">ทุกสถานะ</option>
+                    <option value="Approve">อนุมัติ</option>
+                    <option value="Reject">ไม่อนุมัติ</option>
+                    <option value="Not Started">ยังไม่เริ่ม</option>
+                </select>
+                <div style="margin-left: auto;">
+                    <button class="btn btn-primary" onclick="showAddTrackerModal()">+ เพิ่มโครงการ</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="project-table">
+                    <thead>
+                        <tr>
+                            <th>รหัส</th>
+                            <th>ชื่อโครงการ</th>
+                            <th>ประเภท</th>
+                            <th>ปีงบฯ</th>
+                            <th>หัวหน้าหน่วยงาน</th>
+                            <th>หัวหน้าฝ่ายงบฯ</th>
+                            <th>ผู้อำนวยการ</th>
+                            <th>หมายเหตุ</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tracker-table-body">
+                        <tr><td colspan="9" class="loading"><div class="spinner"></div>กำลังโหลดข้อมูล...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add TOR Project Modal -->
+    <div class="modal-overlay" id="tor-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title font-display">เพิ่มประเภทโครงการ</h2>
+                <p class="modal-subtitle">กรอกข้อมูลเพื่อเพิ่มประเภทโครงการใหม่</p>
+            </div>
+            <div class="form-group">
+                <label class="form-label">ชื่อประเภทโครงการ</label>
+                <input type="text" class="form-input" id="tor-project-name-input" placeholder="เช่น IT / Digital Transformation">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeTorModal()">ยกเลิก</button>
+                <button class="btn btn-primary" onclick="saveTorProject()">บันทึก</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Tracking Project Modal -->
+    <div class="modal-overlay" id="tracker-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title font-display" id="tracker-modal-title">เพิ่มโครงการใหม่</h2>
+                <p class="modal-subtitle">กรอกข้อมูลโครงการ</p>
+            </div>
+            <div class="form-group">
+                <label class="form-label">ชื่อโครงการ *</label>
+                <input type="text" class="form-input" id="tracker-project-name" placeholder="ชื่อโครงการ">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">ประเภทโครงการ *</label>
+                    <select class="form-select" id="tracker-project-type"><option value="">เลือกประเภท</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ปีงบประมาณ *</label>
+                    <select class="form-select" id="tracker-project-year">
+                        <option value="">เลือกปี</option>
+                        <option value="ปีงบประมาณ 2567">ปีงบประมาณ 2567</option>
+                        <option value="ปีงบประมาณ 2568">ปีงบประมาณ 2568</option>
+                        <option value="ปีงบประมาณ 2569">ปีงบประมาณ 2569</option>
+                        <option value="ปีงบประมาณ 2570">ปีงบประมาณ 2570</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">คำอธิบายโครงการ</label>
+                <textarea class="form-textarea" id="tracker-project-desc" placeholder="รายละเอียดโครงการ"></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">หัวหน้าหน่วยงาน</label>
+                    <select class="form-select" id="tracker-status-head"><option value="Not Started">Not Started</option><option value="Approve">Approve</option><option value="Reject">Reject</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">หัวหน้าฝ่ายงบประมาณ</label>
+                    <select class="form-select" id="tracker-status-budget"><option value="Not Started">Not Started</option><option value="Approve">Approve</option><option value="Reject">Reject</option></select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">ผู้อำนวยการโรงเรียน</label>
+                    <select class="form-select" id="tracker-status-director"><option value="Not Started">Not Started</option><option value="Approve">Approve</option><option value="Reject">Reject</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">หมายเหตุ</label>
+                    <input type="text" class="form-input" id="tracker-project-note" placeholder="หมายเหตุ">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeTrackerModal()">ยกเลิก</button>
+                <button class="btn btn-primary" onclick="saveTrackerProject()">บันทึก</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"><span id="toast-message">สำเร็จ</span></div>
+
+    <script>
+        const API_BASE = 'http://localhost:8765';
+        
+        // State
+        let torProjects = [];
+        let torSections = [];
+        let selectedTorProject = null;
+        let trackerProjects = [];
+        let trackerProjectTypes = [];
+        let trackerYears = [];
+        let editingTrackerId = null;
+
+        // ============================================
+        // NAVIGATION
+        // ============================================
+        function navigateTo(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(`page-${page}`).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (page === 'home') renderHomeStats();
+            if (page === 'tor') { renderTorProjects(); renderTorStats(); }
+            if (page === 'tracker') { renderTrackerTable(); renderTrackerStats(); }
+        }
+
+        // ============================================
+        // INITIALIZE
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAllData();
+        });
+
+        async function loadAllData() {
+            try {
+                // Load TOR data
+                const [torProjectsRes, torSectionsRes] = await Promise.all([
+                    fetch(`${API_BASE}/api/tor/projects`),
+                    fetch(`${API_BASE}/api/tor/sections`)
+                ]);
+                
+                const torProjectsData = await torProjectsRes.json();
+                const torSectionsData = await torSectionsRes.json();
+                
+                if (torProjectsData.success) {
+                    torProjects = torProjectsData.data;
+                    trackerProjectTypes = torProjects.map(p => p.name);
+                    populateTrackerProjectTypes();
+                }
+                if (torSectionsData.success) torSections = torSectionsData.data;
+
+                // Load Tracker data
+                const [trackerProjectsRes, trackerYearsRes] = await Promise.all([
+                    fetch(`${API_BASE}/api/tracking/projects`),
+                    fetch(`${API_BASE}/api/tracking/years`)
+                ]);
+                
+                const trackerData = await trackerProjectsRes.json();
+                const yearsData = await trackerYearsRes.json();
+                
+                if (trackerData.success) trackerProjects = trackerData.data;
+                if (yearsData.success) {
+                    trackerYears = yearsData.data;
+                    populateTrackerYears();
+                }
+
+                renderHomeStats();
+                showToast('โหลดข้อมูลสำเร็จ', 'success');
+            } catch (error) {
+                console.error('Error:', error);
+                loadFallbackData();
+            }
+        }
+
+        function loadFallbackData() {
+            // TOR Fallback
+            torProjects = [
+                { name: 'จัดซื้อจัดจ้างทั่วไป', sections: { 'หลักการและเหตุผล': true, 'วัตถุประสงค์': true, 'ขอบเขตงาน': true, 'งบประมาณ': true, 'ตรวจรับ': true } },
+                { name: 'IT / Digital Transformation', sections: { 'หลักการและเหตุผล': true, 'วัตถุประสงค์': true, 'ขอบเขตงาน': true, 'Functional Req.': true, 'Security': true, 'PDPA': true } },
+                { name: 'AI / Big Data', sections: { 'หลักการและเหตุผล': true, 'วัตถุประสงค์': true, 'ขอบเขตงาน': true, 'Functional Req.': true, 'AI Metric': true, 'Explainability': true } }
+            ];
+            torSections = ['หลักการและเหตุผล', 'วัตถุประสงค์', 'ขอบเขตงาน', 'Functional Req.', 'Non-functional Req.', 'Technical Spec', 'Security', 'PDPA', 'งบประมาณ', 'ตรวจรับ', 'AI Metric', 'Explainability'];
+            trackerProjectTypes = ['จัดซื้อจัดจ้างทั่วไป', 'IT / Digital Transformation', 'AI / Big Data', 'ก่อสร้าง', 'จ้างที่ปรึกษา'];
+            
+            // Tracker Fallback
+            trackerProjects = [
+                { 'ID': 'P001', 'ชื่อโครงการ': 'ระบบจัดการห้องสมุดอัจฉริยะ', 'ประเภทโครงการ': 'IT / Digital Transformation', 'คำอธิบายโครงการ': 'พัฒนาระบบห้องสมุดดิจิทัล', 'ปีงบประมาณ': 'ปีงบประมาณ 2568', 'หัวหน้าหน่วยงาน': 'Approve', 'หัวหน้าฝ่ายงบประมาณ': 'Approve', 'ผู้อำนวยการโรงเรียน': 'Not Started', 'หมายเหตุ': 'รอการอนุมัติ' },
+                { 'ID': 'P002', 'ชื่อโครงการ': 'ก่อสร้างอาคารเรียน', 'ประเภทโครงการ': 'ก่อสร้าง', 'คำอธิบายโครงการ': 'ก่อสร้างอาคาร 3 ชั้น', 'ปีงบประมาณ': 'ปีงบประมาณ 2568', 'หัวหน้าหน่วยงาน': 'Approve', 'หัวหน้าฝ่ายงบประมาณ': 'Approve', 'ผู้อำนวยการโรงเรียน': 'Approve', 'หมายเหตุ': 'อนุมัติแล้ว' },
+                { 'ID': 'P003', 'ชื่อโครงการ': 'จัดซื้อคอมพิวเตอร์', 'ประเภทโครงการ': 'จัดซื้อจัดจ้างทั่วไป', 'คำอธิบายโครงการ': 'จัดซื้อ 50 เครื่อง', 'ปีงบประมาณ': 'ปีงบประมาณ 2568', 'หัวหน้าหน่วยงาน': 'Reject', 'หัวหน้าฝ่ายงบประมาณ': 'Not Started', 'ผู้อำนวยการโรงเรียน': 'Not Started', 'หมายเหตุ': 'งบไม่พอ' }
+            ];
+            trackerYears = ['ปีงบประมาณ 2567', 'ปีงบประมาณ 2568', 'ปีงบประมาณ 2569'];
+            
+            populateTrackerProjectTypes();
+            populateTrackerYears();
+            renderHomeStats();
+            showToast('ใช้ข้อมูลตัวอย่าง', 'warning');
+        }
+
+        // ============================================
+        // HOME PAGE
+        // ============================================
+        function renderHomeStats() {
+            const total = trackerProjects.length;
+            let approved = 0, pending = 0;
+            trackerProjects.forEach(p => {
+                const statuses = [p['หัวหน้าหน่วยงาน'], p['หัวหน้าฝ่ายงบประมาณ'], p['ผู้อำนวยการโรงเรียน']];
+                if (statuses.every(s => s === 'Approve')) approved++;
+                else pending++;
+            });
+            document.getElementById('home-stat-total').textContent = total;
+            document.getElementById('home-stat-approved').textContent = approved;
+            document.getElementById('home-stat-pending').textContent = pending;
+            document.getElementById('home-stat-tor-types').textContent = torProjects.length;
+        }
+
+        // ============================================
+        // TOR MANAGER PAGE
+        // ============================================
+        function renderTorStats() {
+            const totalProjects = torProjects.length;
+            const totalSections = torSections.length;
+            let totalActive = 0;
+            torProjects.forEach(p => { totalActive += Object.values(p.sections).filter(v => v).length; });
+            const avg = totalProjects > 0 ? (totalActive / totalProjects).toFixed(1) : '0';
+            
+            document.getElementById('tor-stat-projects').textContent = totalProjects;
+            document.getElementById('tor-stat-sections').textContent = totalSections;
+            document.getElementById('tor-stat-avg').textContent = avg;
+            document.getElementById('tor-stat-active').textContent = totalActive;
+        }
+
+        function renderTorProjects() {
+            const container = document.getElementById('tor-project-list');
+            if (torProjects.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-title font-display">ยังไม่มีข้อมูล</div></div>';
+                return;
+            }
+            container.innerHTML = torProjects.map((project, index) => {
+                const activeCount = Object.values(project.sections).filter(v => v).length;
+                return `
+                    <div class="project-item ${selectedTorProject === index ? 'active' : ''}" onclick="selectTorProject(${index})">
+                        <div class="project-info">
+                            <div class="project-icon">${project.name.charAt(0)}</div>
+                            <div>
+                                <div class="project-name">${project.name}</div>
+                                <div class="project-meta">${activeCount}/${torSections.length} หัวข้อ</div>
+                            </div>
+                        </div>
+                        <div class="project-actions" onclick="event.stopPropagation()">
+                            <button class="btn-icon" onclick="deleteTorProject('${project.name}')">🗑</button>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function selectTorProject(index) {
+            selectedTorProject = index;
+            renderTorProjects();
+            renderTorSections();
+        }
+
+        function renderTorSections() {
+            const panel = document.getElementById('tor-section-content');
+            const actions = document.getElementById('section-actions');
+            const nameEl = document.getElementById('selected-project-name');
+            
+            if (selectedTorProject === null || selectedTorProject >= torProjects.length) {
+                panel.innerHTML = '<div class="empty-state"><div class="empty-state-title font-display">เลือกประเภทโครงการ</div><p>คลิกที่ประเภทโครงการด้านซ้าย</p></div>';
+                actions.style.display = 'none';
+                nameEl.textContent = 'เลือกประเภทโครงการ';
+                return;
+            }
+            
+            const project = torProjects[selectedTorProject];
+            nameEl.textContent = project.name;
+            actions.style.display = 'flex';
+            
+            panel.innerHTML = `<div class="section-grid">
+                ${torSections.map(section => {
+                    const isEnabled = project.sections[section] || false;
+                    return `<div class="section-item ${isEnabled ? 'enabled' : ''}">
+                        <span class="section-name">${section}</span>
+                        <div class="toggle ${isEnabled ? 'active' : ''}" onclick="toggleTorSection('${section}')"></div>
+                    </div>`;
+                }).join('')}
+            </div>`;
+        }
+
+        async function toggleTorSection(sectionName) {
+            if (selectedTorProject === null) return;
+            const project = torProjects[selectedTorProject];
+            project.sections[sectionName] = !project.sections[sectionName];
+            renderTorSections();
+            renderTorProjects();
+            renderTorStats();
+            renderHomeStats();
+            
+            try {
+                await fetch(`${API_BASE}/api/tor/projects/${encodeURIComponent(project.name)}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sections: project.sections })
+                });
+            } catch (e) {}
+        }
+
+        function selectAllTorSections(enabled) {
+            if (selectedTorProject === null) return;
+            const project = torProjects[selectedTorProject];
+            torSections.forEach(s => project.sections[s] = enabled);
+            renderTorSections();
+            renderTorProjects();
+            renderTorStats();
+        }
+
+        function showAddTorModal() {
+            document.getElementById('tor-project-name-input').value = '';
+            document.getElementById('tor-modal').classList.add('active');
+        }
+
+        function closeTorModal() { document.getElementById('tor-modal').classList.remove('active'); }
+
+        async function saveTorProject() {
+            const name = document.getElementById('tor-project-name-input').value.trim();
+            if (!name) { showToast('กรุณากรอกชื่อ', 'error'); return; }
+            
+            try {
+                const res = await fetch(`${API_BASE}/api/tor/projects`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    torProjects.push({ name, sections: {} });
+                    renderTorProjects();
+                    renderTorStats();
+                    closeTorModal();
+                    showToast('เพิ่มสำเร็จ', 'success');
+                }
+            } catch (e) {
+                torProjects.push({ name, sections: {} });
+                renderTorProjects();
+                renderTorStats();
+                closeTorModal();
+                showToast('เพิ่มในระบบชั่วคราว', 'warning');
+            }
+        }
+
+        async function deleteTorProject(name) {
+            if (!confirm(`ลบ "${name}"?`)) return;
+            try {
+                await fetch(`${API_BASE}/api/tor/projects/${encodeURIComponent(name)}`, { method: 'DELETE' });
+            } catch (e) {}
+            const idx = torProjects.findIndex(p => p.name === name);
+            if (idx > -1) {
+                torProjects.splice(idx, 1);
+                if (selectedTorProject === idx) selectedTorProject = null;
+                renderTorProjects();
+                renderTorStats();
+            }
+        }
+
+        // ============================================
+        // PROJECT TRACKER PAGE
+        // ============================================
+        function populateTrackerProjectTypes() {
+            const select = document.getElementById('tracker-project-type');
+            const filter = document.getElementById('filter-type');
+            const options = '<option value="">เลือกประเภท</option>' + trackerProjectTypes.map(t => `<option value="${t}">${t}</option>`).join('');
+            if (select) select.innerHTML = options;
+            if (filter) filter.innerHTML = '<option value="">ทุกประเภท</option>' + trackerProjectTypes.map(t => `<option value="${t}">${t}</option>`).join('');
+        }
+
+        function populateTrackerYears() {
+            const select = document.getElementById('filter-year');
+            if (!select) return;
+            select.innerHTML = '<option value="">ทุกปีงบประมาณ</option>' + trackerYears.map(y => `<option value="${y}">${y}</option>`).join('');
+        }
+
+        function renderTrackerStats() {
+            const total = trackerProjects.length;
+            let approved = 0, pending = 0, rejected = 0;
+            trackerProjects.forEach(p => {
+                const s = [p['หัวหน้าหน่วยงาน'], p['หัวหน้าฝ่ายงบประมาณ'], p['ผู้อำนวยการโรงเรียน']];
+                if (s.every(x => x === 'Approve')) approved++;
+                else if (s.some(x => x === 'Reject')) rejected++;
+                else pending++;
+            });
+            document.getElementById('tracker-stat-total').textContent = total;
+            document.getElementById('tracker-stat-approved').textContent = approved;
+            document.getElementById('tracker-stat-pending').textContent = pending;
+            document.getElementById('tracker-stat-rejected').textContent = rejected;
+        }
+
+        function getFilteredTrackerProjects() {
+            const yearFilter = document.getElementById('filter-year').value;
+            const typeFilter = document.getElementById('filter-type').value;
+            const statusFilter = document.getElementById('filter-status').value;
+            
+            return trackerProjects.filter(project => {
+                if (yearFilter && project['ปีงบประมาณ'] !== yearFilter) return false;
+                if (typeFilter && project['ประเภทโครงการ'] !== typeFilter) return false;
+                if (statusFilter) {
+                    const statuses = [project['หัวหน้าหน่วยงาน'], project['หัวหน้าฝ่ายงบประมาณ'], project['ผู้อำนวยการโรงเรียน']];
+                    if (!statuses.includes(statusFilter)) return false;
+                }
+                return true;
+            });
+        }
+
+        function renderTrackerTable() {
+            const tbody = document.getElementById('tracker-table-body');
+            const filtered = getFilteredTrackerProjects();
+            
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="empty-state">
+                    <div class="empty-state-title font-display">ไม่พบข้อมูล</div>
+                    <p>ไม่พบโครงการที่ตรงกับเงื่อนไข</p>
+                </td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = filtered.map(project => {
+                const s1 = project['หัวหน้าหน่วยงาน'] || 'Not Started';
+                const s2 = project['หัวหน้าฝ่ายงบประมาณ'] || 'Not Started';
+                const s3 = project['ผู้อำนวยการโรงเรียน'] || 'Not Started';
+                return `<tr>
+                    <td>${project['ID']}</td>
+                    <td><div style="font-weight:500;color:var(--ink)">${project['ชื่อโครงการ']}</div><div style="font-size:12px;color:var(--muted);margin-top:4px">${project['คำอธิบายโครงการ'] || ''}</div></td>
+                    <td>${project['ประเภทโครงการ']}</td>
+                    <td>${project['ปีงบประมาณ']}</td>
+                    <td>${renderStatusBadge(s1)}</td>
+                    <td>${renderStatusBadge(s2)}</td>
+                    <td>${renderStatusBadge(s3)}</td>
+                    <td>${project['หมายเหตุ'] || '-'}</td>
+                    <td><div style="display:flex;gap:4px">
+                        <button class="btn-icon" onclick="editTrackerProject('${project['ID']}')">✎</button>
+                        <button class="btn-icon" onclick="deleteTrackerProject('${project['ID']}')">🗑</button>
+                    </div></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderStatusBadge(status) {
+            const cls = status === 'Approve' ? 'approve' : status === 'Reject' ? 'reject' : 'not-started';
+            const txt = status === 'Approve' ? 'อนุมัติ' : status === 'Reject' ? 'ไม่อนุมัติ' : 'ยังไม่เริ่ม';
+            return `<span class="status-badge ${cls}"><span class="status-dot ${cls}"></span>${txt}</span>`;
+        }
+
+        function showAddTrackerModal() {
+            editingTrackerId = null;
+            document.getElementById('tracker-modal-title').textContent = 'เพิ่มโครงการใหม่';
+            clearTrackerForm();
+            document.getElementById('tracker-modal').classList.add('active');
+        }
+
+        function editTrackerProject(id) {
+            const project = trackerProjects.find(p => p['ID'] === id);
+            if (!project) return;
+            editingTrackerId = id;
+            document.getElementById('tracker-modal-title').textContent = 'แก้ไขโครงการ';
+            document.getElementById('tracker-project-name').value = project['ชื่อโครงการ'] || '';
+            document.getElementById('tracker-project-type').value = project['ประเภทโครงการ'] || '';
+            document.getElementById('tracker-project-year').value = project['ปีงบประมาณ'] || '';
+            document.getElementById('tracker-project-desc').value = project['คำอธิบายโครงการ'] || '';
+            document.getElementById('tracker-status-head').value = project['หัวหน้าหน่วยงาน'] || 'Not Started';
+            document.getElementById('tracker-status-budget').value = project['หัวหน้าฝ่ายงบประมาณ'] || 'Not Started';
+            document.getElementById('tracker-status-director').value = project['ผู้อำนวยการโรงเรียน'] || 'Not Started';
+            document.getElementById('tracker-project-note').value = project['หมายเหตุ'] || '';
+            document.getElementById('tracker-modal').classList.add('active');
+        }
+
+        function closeTrackerModal() { document.getElementById('tracker-modal').classList.remove('active'); editingTrackerId = null; }
+
+        function clearTrackerForm() {
+            document.getElementById('tracker-project-name').value = '';
+            document.getElementById('tracker-project-type').value = '';
+            document.getElementById('tracker-project-year').value = '';
+            document.getElementById('tracker-project-desc').value = '';
+            document.getElementById('tracker-status-head').value = 'Not Started';
+            document.getElementById('tracker-status-budget').value = 'Not Started';
+            document.getElementById('tracker-status-director').value = 'Not Started';
+            document.getElementById('tracker-project-note').value = '';
+        }
+
+        async function saveTrackerProject() {
+            const data = {
+                'ชื่อโครงการ': document.getElementById('tracker-project-name').value.trim(),
+                'ประเภทโครงการ': document.getElementById('tracker-project-type').value,
+                'ปีงบประมาณ': document.getElementById('tracker-project-year').value,
+                'คำอธิบายโครงการ': document.getElementById('tracker-project-desc').value.trim(),
+                'หัวหน้าหน่วยงาน': document.getElementById('tracker-status-head').value,
+                'หัวหน้าฝ่ายงบประมาณ': document.getElementById('tracker-status-budget').value,
+                'ผู้อำนวยการโรงเรียน': document.getElementById('tracker-status-director').value,
+                'หมายเหตุ': document.getElementById('tracker-project-note').value.trim()
+            };
+            
+            if (!data['ชื่อโครงการ'] || !data['ประเภทโครงการ'] || !data['ปีงบประมาณ']) {
+                showToast('กรุณากรอกข้อมูลที่จำเป็น', 'error'); return;
+            }
+            
+            try {
+                let res;
+                if (editingTrackerId) {
+                    res = await fetch(`${API_BASE}/api/tracking/projects/${editingTrackerId}`, {
+                        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+                    });
+                } else {
+                    res = await fetch(`${API_BASE}/api/tracking/projects`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+                    });
+                }
+                const result = await res.json();
+                if (result.success) {
+                    closeTrackerModal();
+                    loadAllData();
+                    showToast(editingTrackerId ? 'แก้ไขสำเร็จ' : 'เพิ่มโครงการสำเร็จ', 'success');
+                }
+            } catch (e) {
+                showToast('บันทึกในระบบชั่วคราว', 'warning');
+            }
+        }
+
+        async function deleteTrackerProject(id) {
+            if (!confirm(`ลบโครงการ "${id}"?`)) return;
+            try {
+                await fetch(`${API_BASE}/api/tracking/projects/${id}`, { method: 'DELETE' });
+            } catch (e) {}
+            trackerProjects = trackerProjects.filter(p => p['ID'] !== id);
+            renderTrackerTable();
+            renderTrackerStats();
+            renderHomeStats();
+            showToast('ลบสำเร็จ', 'success');
+        }
+
+        // ============================================
+        // TOAST
+        // ============================================
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Close modals on outside click
+        document.getElementById('tor-modal').addEventListener('click', function(e) { if (e.target === this) closeTorModal(); });
+        document.getElementById('tracker-modal').addEventListener('click', function(e) { if (e.target === this) closeTrackerModal(); });
+
+        // Enter key on inputs
+        document.getElementById('tor-project-name-input').addEventListener('keypress', function(e) { if (e.key === 'Enter') saveTorProject(); });
+    </script>
+</body>
+</html>

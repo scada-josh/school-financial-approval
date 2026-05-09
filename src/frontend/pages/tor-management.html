@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOR Management System - ระบบจัดการ TOR ภาครัฐ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <style>
+        /* ============================================
+           TOR Management System - Bento Box Dashboard
+           Based on Design-Guide.md
+           ============================================ */
+        
+        :root {
+            --bg-dark: #0f1419;
+            --bg-card: #1a1f2e;
+            --bg-card-hover: #242b3d;
+            --accent-primary: #c9a96e;
+            --accent-secondary: #8b7355;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #2d3748;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --coffee: #c9a96e;
+            --tea: #a3e635;
+            --bakery: #fbbf24;
+            --soda: #06b6d4;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 20, 25, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .header-brand .material-symbols-outlined {
+            font-size: 28px;
+            color: var(--accent-primary);
+        }
+        
+        .header-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .header-subtitle {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-family: 'Prompt', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-primary);
+            color: var(--text-primary);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--bg-dark);
+            border: none;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+            color: var(--bg-dark);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+            border: none;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+        }
+        
+        /* Main Layout */
+        .main {
+            padding: 88px 24px 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Bento Grid */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .span-2 { grid-column: span 2; }
+        .span-3 { grid-column: span 3; }
+        .span-4 { grid-column: span 4; }
+        .span-5 { grid-column: span 5; }
+        .span-6 { grid-column: span 6; }
+        .span-7 { grid-column: span 7; }
+        .span-8 { grid-column: span 8; }
+        .span-12 { grid-column: span 12; }
+        
+        /* Card */
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        
+        .card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-primary);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-title .material-symbols-outlined {
+            color: var(--accent-primary);
+            font-size: 20px;
+        }
+        
+        .card-badge {
+            padding: 2px 10px;
+            background: var(--accent-primary);
+            color: var(--bg-dark);
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+        
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .card-value-sm {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .card-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .card-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+        
+        /* Highlight Card */
+        .card-highlight {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border: none;
+        }
+        
+        .card-highlight .card-value,
+        .card-highlight .card-title,
+        .card-highlight .card-subtitle {
+            color: var(--bg-dark);
+        }
+        
+        .card-highlight .card-title .material-symbols-outlined {
+            color: var(--bg-dark);
+        }
+        
+        /* Status Colors */
+        .text-success { color: var(--success); }
+        .text-warning { color: var(--warning); }
+        .text-danger { color: var(--danger); }
+        .text-info { color: var(--info); }
+        
+        /* Section Title */
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title .material-symbols-outlined {
+            color: var(--accent-primary);
+        }
+        
+        /* Project Type Selector */
+        .project-selector {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .project-chip {
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .project-chip:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent-primary);
+        }
+        
+        .project-chip.active {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--bg-dark);
+            border-color: transparent;
+            font-weight: 600;
+        }
+        
+        /* TOR Section List */
+        .tor-section-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .tor-section-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--bg-dark);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        
+        .tor-section-item:hover {
+            border-color: var(--accent-primary);
+        }
+        
+        .tor-section-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .tor-section-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+            color: var(--accent-primary);
+        }
+        
+        .tor-section-icon.active {
+            background: var(--success);
+            color: white;
+        }
+        
+        .tor-section-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .tor-section-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .tor-section-toggle {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            background: var(--border);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .tor-section-toggle.active {
+            background: var(--success);
+        }
+        
+        .tor-section-toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        
+        .tor-section-toggle.active::after {
+            left: 25px;
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            margin-top: 12px;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+        }
+        
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-fill.high { background: var(--success); }
+        .progress-fill.medium { background: var(--warning); }
+        .progress-fill.low { background: var(--danger); }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 12px;
+            background: var(--bg-dark);
+            border-radius: 10px;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .comparison-table th {
+            background: var(--bg-dark);
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .comparison-table tr:hover td {
+            background: var(--bg-card-hover);
+        }
+        
+        .check-icon {
+            color: var(--success);
+            font-weight: 700;
+        }
+        
+        .cross-icon {
+            color: var(--danger);
+            font-weight: 700;
+        }
+        
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .legend-dot.required { background: var(--success); }
+        .legend-dot.optional { background: var(--warning); }
+        .legend-dot.not-used { background: var(--danger); }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .span-2, .span-3, .span-4, .span-5, .span-6 {
+                grid-column: span 6;
+            }
+            .span-7, .span-8, .span-12 {
+                grid-column: span 12;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .span-2, .span-3, .span-4, .span-5, .span-6,
+            .span-7, .span-8, .span-12 {
+                grid-column: span 12;
+            }
+            .main {
+                padding: 80px 16px 16px;
+            }
+            .header {
+                padding: 0 16px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 9999;
+        }
+        
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+        
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Prompt', sans-serif;
+            font-size: 0.9rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 3000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .notification.success {
+            border-color: var(--success);
+        }
+        
+        .notification.error {
+            border-color: var(--danger);
+        }
+        
+        /* Export Actions */
+        .export-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading -->
+    <div id="loading" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div style="color: var(--text-secondary);">กำลังโหลดข้อมูล...</div>
+    </div>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="header-brand">
+            <span class="material-symbols-outlined">description</span>
+            <div>
+                <div class="header-title">TOR Management System</div>
+                <div class="header-subtitle">ระบบจัดการ TOR ภาครัฐ</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-sm" onclick="refreshData()">
+                <span class="material-symbols-outlined" style="font-size: 16px;">refresh</span>
+                รีเฟรช
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="exportConfig()">
+                <span class="material-symbols-outlined" style="font-size: 16px;">download</span>
+                ส่งออก
+            </button>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Summary KPI Cards -->
+        <div class="bento-grid">
+            <div class="card span-3">
+                <div class="card-label">ประเภทโครงการ</div>
+                <div class="card-value" id="total-projects">-</div>
+                <div class="card-subtitle">จำนวนประเภทที่รองรับ</div>
+            </div>
+            <div class="card span-3">
+                <div class="card-label">หัวข้อ TOR</div>
+                <div class="card-value" id="total-sections">-</div>
+                <div class="card-subtitle">จำนวนหัวข้อทั้งหมด</div>
+            </div>
+            <div class="card span-3">
+                <div class="card-label">หัวข้อเฉลี่ย</div>
+                <div class="card-value" id="avg-sections">-</div>
+                <div class="card-subtitle">หัวข้อต่อประเภทโครงการ</div>
+            </div>
+            <div class="card span-3 card-highlight">
+                <div class="card-label">ความครบถ้วน</div>
+                <div class="card-value" id="completeness">-</div>
+                <div class="card-subtitle">% หัวข้อที่กำหนดไว้</div>
+            </div>
+        </div>
+        
+        <!-- Project Type Selector -->
+        <div class="card span-12" style="margin-bottom: 24px;">
+            <div class="card-title" style="margin-bottom: 16px;">
+                <span class="material-symbols-outlined">folder_open</span>
+                เลือกประเภทโครงการ
+            </div>
+            <div class="project-selector" id="project-selector">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+        
+        <!-- TOR Sections Management -->
+        <div class="bento-grid">
+            <!-- Active Sections -->
+            <div class="card span-7">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="material-symbols-outlined">checklist</span>
+                        หัวข้อ TOR ที่ใช้
+                    </div>
+                    <span class="card-badge" id="active-count">0</span>
+                </div>
+                <div class="tor-section-list" id="active-sections">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+            
+            <!-- Statistics -->
+            <div class="card span-5">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="material-symbols-outlined">analytics</span>
+                        สถิติ
+                    </div>
+                </div>
+                <div class="stats-grid" style="margin-bottom: 20px;">
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-active">-</div>
+                        <div class="stat-label">ใช้งาน</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-inactive">-</div>
+                        <div class="stat-label">ไม่ใช้</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-percent">-</div>
+                        <div class="stat-label">%</div>
+                    </div>
+                </div>
+                
+                <div class="card-label">ความครบถ้วน</div>
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span id="progress-text">0%</span>
+                        <span id="progress-ratio">0/0</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill high" id="progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <div class="card-label">คำแนะนำ</div>
+                    <div id="recommendations" style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8;">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comparison Matrix -->
+        <div class="card span-12" style="margin-top: 24px;">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="material-symbols-outlined">table_chart</span>
+                    ตารางเปรียบเทียบหัวข้อ TOR
+                </div>
+                <div class="export-actions">
+                    <button class="btn btn-sm" onclick="exportToCSV()">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">download</span>
+                        CSV
+                    </button>
+                    <button class="btn btn-sm" onclick="exportToJSON()">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">code</span>
+                        JSON
+                    </button>
+                </div>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="comparison-table" id="comparison-table">
+                    <!-- Dynamic content -->
+                </table>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-dot required"></div>
+                    <span>ใช้งาน (✅)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot not-used"></div>
+                    <span>ไม่ใช้ (❌)</span>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <span class="material-symbols-outlined">check_circle</span>
+        <span id="notification-text">สำเร็จ</span>
+    </div>
+    
+    <script>
+        // ============================================
+        // TOR Management System - Data & Logic
+        // ============================================
+        
+        // Data storage
+        let torData = null;
+        let currentProjectIndex = 0;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+        });
+        
+        // Load data from Google Sheet via gviz API
+        function loadData() {
+            showLoading(true);
+            
+            const SHEET_ID = '1Plh_0AodTomKLyP8zrBp9FOriHXVm_uGYIO4TVHSozg';
+            const gid = '959538205'; // TOR_Config sheet ID
+            
+            fetchSheet(gid)
+                .then(data => {
+                    torData = processData(data);
+                    renderDashboard();
+                    showLoading(false);
+                    showNotification('โหลดข้อมูลสำเร็จ', 'success');
+                })
+                .catch(error => {
+                    console.error('Error loading data:', error);
+                    // Use fallback data
+                    torData = getFallbackData();
+                    renderDashboard();
+                    showLoading(false);
+                    showNotification('ใช้ข้อมูลตัวอย่าง (ไม่สามารถเชื่อมต่อ Sheet)', 'error');
+                });
+        }
+        
+        // Fetch data from Google Sheet using gviz
+        function fetchSheet(gid = 0) {
+            return new Promise((resolve, reject) => {
+                const SHEET_ID = '1Plh_0AodTomKLyP8zrBp9FOriHXVm_uGYIO4TVHSozg';
+                const cb = '__gviz_' + gid + '_' + Date.now();
+                const timer = setTimeout(() => {
+                    cleanup();
+                    reject(new Error('Request timeout (20s)'));
+                }, 20000);
+                
+                function cleanup() {
+                    delete window[cb];
+                    const el = document.getElementById('__gs_' + cb);
+                    if (el) el.remove();
+                }
+                
+                window[cb] = function(resp) {
+                    clearTimeout(timer);
+                    cleanup();
+                    
+                    if (resp.status !== 'ok') {
+                        reject(new Error(resp.errors?.[0]?.message || 'gviz error'));
+                        return;
+                    }
+                    
+                    const cols = resp.table.cols.map(c => (c.label || c.id || '').trim());
+                    const rows = (resp.table.rows || []).map(r =>
+                        Object.fromEntries(cols.map((h, i) => {
+                            const cell = r.c ? r.c[i] : null;
+                            let val = (cell && cell.v !== null && cell.v !== undefined) ? String(cell.v) : '';
+                            return [h, val.trim()];
+                        }))
+                    );
+                    
+                    resolve(rows);
+                };
+                
+                const s = document.createElement('script');
+                s.id = '__gs_' + cb;
+                s.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${gid}&tqx=responseHandler:${cb}`;
+                s.onerror = () => { clearTimeout(timer); cleanup(); reject(new Error('Script load failed')); };
+                document.head.appendChild(s);
+            });
+        }
+        
+        // Process raw data into structured format
+        function processData(rows) {
+            if (!rows || rows.length === 0) return null;
+            
+            const headers = Object.keys(rows[0]);
+            const projectTypes = [];
+            
+            rows.forEach(row => {
+                const projectName = row[headers[0]];
+                if (!projectName) return;
+                
+                const sections = {};
+                headers.slice(1).forEach(header => {
+                    sections[header] = row[header] === '✅';
+                });
+                
+                projectTypes.push({
+                    name: projectName,
+                    sections: sections
+                });
+            });
+            
+            return {
+                headers: headers,
+                projectTypes: projectTypes,
+                sectionNames: headers.slice(1)
+            };
+        }
+        
+        // Fallback data if API fails
+        function getFallbackData() {
+            return {
+                headers: ['ประเภทโครงการ', 'หลักการและเหตุผล', 'วัตถุประสงค์', 'ขอบเขตงาน', 'Functional Req.', 'Non-functional Req.', 'Technical Spec', 'Architecture', 'Data Flow', 'Deliverables', 'Timeline', 'Milestone', 'งบประมาณ', 'ตรวจรับ', 'SLA/Uptime', 'Security', 'PDPA', 'Logging/Audit', 'Backup/DR', 'API/Integration', 'Data Gov.', 'AI Metric', 'Explainability', 'Source Code', 'OSS Policy', 'Training', 'Warranty', 'KPI', 'Compliance'],
+                projectTypes: [
+                    {
+                        name: 'จัดซื้อจัดจ้างทั่วไป',
+                        sections: {
+                            'หลักการและเหตุผล': true, 'วัตถุประสงค์': true, 'ขอบเขตงาน': true,
+                            'Functional Req.': false, 'Non-functional Req.': false, 'Technical Spec': true,
+                            'Architecture': false, 'Data Flow': false, 'Deliverables': true,
+                            'Timeline': true, 'Milestone': true, 'งบประมาณ': true,
+                            'ตรวจรับ': true, 'SLA/Uptime': false, 'Security': false,
+                            'PDPA': false, 'Logging/Audit': false, 'Backup/DR': false,
+                            'API/Integration': false, 'Data Gov.': false, 'AI Metric': false,
+                            'Explainability': false, 'Source Code': false, 'OSS Policy': false,
+                            'Training': false, 'Warranty': true, 'KPI': true, 'Compliance': true
+                        }
+                    },
+                    {
+                        name: 'IT / Digital Transformation',
+                        sections: {
+                            'หลักการและเหตุผล': true, 'วัตถุประสงค์': true, 'ขอบเขตงาน': true,
+                            'Functional Req.': true, 'Non-functional Req.': true, 'Technical Spec': true,
+                            'Architecture': true, 'Data Flow': true, 'Deliverables': true,
+                            'Timeline': true, 'Milestone': true, 'งบประมาณ': true,
+                            'ตรวจรับ': true, 'SLA/Uptime': true, 'Security': true,
+                            'PDPA': true, 'Logging/Audit': true, 'Backup/DR': true,
+                            'API/Integration': true, 'Data Gov.': true, 'AI Metric': false,
+                            'Explainability': false, 'Source Code': true, 'OSS Policy': true,
+                            'Training': true, 'Warranty': true, 'KPI': true, 'Compliance': true
+                        }
+                    },
+                    {
+                        name: 'AI / Big Data',
+                        sections: {
+                            'หลักการและเหตุผล': true, 'วัตถุประสงค์': true, 'ขอบเขตงาน': true,
+                            'Functional Req.': true, 'Non-functional Req.': true, 'Technical Spec': true,
+                            'Architecture': true, 'Data Flow': true, 'Deliverables': true,
+                            'Timeline': true, 'Milestone': true, 'งบประมาณ': true,
+                            'ตรวจรับ': true, 'SLA/Uptime': true, 'Security': true,
+                            'PDPA': true, 'Logging/Audit': true, 'Backup/DR': true,
+                            'API/Integration': true, 'Data Gov.': true, 'AI Metric': true,
+                            'Explainability': true, 'Source Code': true, 'OSS Policy': true,
+                            'Training': true, 'Warranty': true, 'KPI': true, 'Compliance': true
+                        }
+                    }
+                ],
+                sectionNames: ['หลักการและเหตุผล', 'วัตถุประสงค์', 'ขอบเขตงาน', 'Functional Req.', 'Non-functional Req.', 'Technical Spec', 'Architecture', 'Data Flow', 'Deliverables', 'Timeline', 'Milestone', 'งบประมาณ', 'ตรวจรับ', 'SLA/Uptime', 'Security', 'PDPA', 'Logging/Audit', 'Backup/DR', 'API/Integration', 'Data Gov.', 'AI Metric', 'Explainability', 'Source Code', 'OSS Policy', 'Training', 'Warranty', 'KPI', 'Compliance']
+            };
+        }
+        
+        // Render dashboard
+        function renderDashboard() {
+            if (!torData) return;
+            
+            renderKPICards();
+            renderProjectSelector();
+            renderActiveSections();
+            renderStatistics();
+            renderComparisonTable();
+        }
+        
+        // Render KPI Cards
+        function renderKPICards() {
+            const totalProjects = torData.projectTypes.length;
+            const totalSections = torData.sectionNames.length;
+            
+            let totalActive = 0;
+            torData.projectTypes.forEach(project => {
+                totalActive += Object.values(project.sections).filter(v => v).length;
+            });
+            
+            const avgSections = (totalActive / totalProjects).toFixed(1);
+            const maxPossible = totalProjects * totalSections;
+            const completeness = ((totalActive / maxPossible) * 100).toFixed(1);
+            
+            document.getElementById('total-projects').textContent = totalProjects;
+            document.getElementById('total-sections').textContent = totalSections;
+            document.getElementById('avg-sections').textContent = avgSections;
+            document.getElementById('completeness').textContent = completeness + '%';
+        }
+        
+        // Render Project Type Selector
+        function renderProjectSelector() {
+            const container = document.getElementById('project-selector');
+            container.innerHTML = '';
+            
+            torData.projectTypes.forEach((project, index) => {
+                const chip = document.createElement('div');
+                chip.className = 'project-chip' + (index === currentProjectIndex ? ' active' : '');
+                chip.textContent = project.name;
+                chip.onclick = () => selectProject(index);
+                container.appendChild(chip);
+            });
+        }
+        
+        // Select project type
+        function selectProject(index) {
+            currentProjectIndex = index;
+            renderProjectSelector();
+            renderActiveSections();
+            renderStatistics();
+        }
+        
+        // Render Active Sections
+        function renderActiveSections() {
+            const container = document.getElementById('active-sections');
+            container.innerHTML = '';
+            
+            const project = torData.projectTypes[currentProjectIndex];
+            const sectionNames = torData.sectionNames;
+            
+            sectionNames.forEach(sectionName => {
+                const isActive = project.sections[sectionName];
+                
+                const item = document.createElement('div');
+                item.className = 'tor-section-item';
+                
+                item.innerHTML = `
+                    <div class="tor-section-info">
+                        <div class="tor-section-icon ${isActive ? 'active' : ''}">
+                            <span class="material-symbols-outlined" style="font-size: 18px;">
+                                ${isActive ? 'check_circle' : 'radio_button_unchecked'}
+                            </span>
+                        </div>
+                        <div>
+                            <div class="tor-section-name">${sectionName}</div>
+                            <div class="tor-section-desc">${isActive ? 'ใช้งาน' : 'ไม่ใช้งาน'}</div>
+                        </div>
+                    </div>
+                    <div class="tor-section-toggle ${isActive ? 'active' : ''}" 
+                         onclick="toggleSection('${sectionName}')"
+                         title="คลิกเพื่อ ${isActive ? 'ปิด' : 'เปิด'}ใช้งาน">
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            });
+            
+            // Update active count
+            const activeCount = Object.values(project.sections).filter(v => v).length;
+            document.getElementById('active-count').textContent = activeCount;
+        }
+        
+        // Toggle section
+        function toggleSection(sectionName) {
+            const project = torData.projectTypes[currentProjectIndex];
+            project.sections[sectionName] = !project.sections[sectionName];
+            
+            renderActiveSections();
+            renderStatistics();
+            renderKPICards();
+            renderComparisonTable();
+            
+            const action = project.sections[sectionName] ? 'เปิดใช้งาน' : 'ปิดใช้งาน';
+            showNotification(`${action} "${sectionName}" สำหรับ ${project.name}`, 'success');
+        }
+        
+        // Render Statistics
+        function renderStatistics() {
+            const project = torData.projectTypes[currentProjectIndex];
+            const sectionNames = torData.sectionNames;
+            
+            const activeCount = Object.values(project.sections).filter(v => v).length;
+            const inactiveCount = sectionNames.length - activeCount;
+            const percent = ((activeCount / sectionNames.length) * 100).toFixed(0);
+            
+            document.getElementById('stat-active').textContent = activeCount;
+            document.getElementById('stat-inactive').textContent = inactiveCount;
+            document.getElementById('stat-percent').textContent = percent + '%';
+            
+            // Progress bar
+            document.getElementById('progress-text').textContent = percent + '%';
+            document.getElementById('progress-ratio').textContent = `${activeCount}/${sectionNames.length}`;
+            document.getElementById('progress-bar').style.width = percent + '%';
+            
+            // Color based on percentage
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.className = 'progress-fill';
+            if (percent >= 70) progressBar.classList.add('high');
+            else if (percent >= 40) progressBar.classList.add('medium');
+            else progressBar.classList.add('low');
+            
+            // Recommendations
+            const recommendations = generateRecommendations(project, sectionNames);
+            document.getElementById('recommendations').innerHTML = recommendations;
+        }
+        
+        // Generate recommendations
+        function generateRecommendations(project, sectionNames) {
+            const activeSections = sectionNames.filter(name => project.sections[name]);
+            const inactiveSections = sectionNames.filter(name => !project.sections[name]);
+            
+            let html = '';
+            
+            // Check for critical sections
+            const criticalSections = ['หลักการและเหตุผล', 'วัตถุประสงค์', 'ขอบเขตงาน', 'งบประมาณ', 'ตรวจรับ'];
+            const missingCritical = criticalSections.filter(name => !project.sections[name]);
+            
+            if (missingCritical.length > 0) {
+                html += `<div style="color: var(--danger); margin-bottom: 8px;">
+                    <strong>⚠️ หัวข้อสำคัญที่ขาด:</strong><br>
+                    ${missingCritical.join(', ')}
+                </div>`;
+            }
+            
+            // Check IT-related sections for IT projects
+            if (project.name.includes('IT') || project.name.includes('Digital') || project.name.includes('AI')) {
+                const itSections = ['Security', 'PDPA', 'Logging/Audit', 'Backup/DR'];
+                const missingIT = itSections.filter(name => !project.sections[name]);
+                
+                if (missingIT.length > 0) {
+                    html += `<div style="color: var(--warning); margin-bottom: 8px;">
+                        <strong>💡 ควรเพิ่มสำหรับโครงการ IT:</strong><br>
+                        ${missingIT.join(', ')}
+                    </div>`;
+                }
+            }
+            
+            // General recommendation
+            const percent = (activeSections.length / sectionNames.length) * 100;
+            if (percent < 50) {
+                html += `<div style="color: var(--info);">
+                    <strong>ℹ️ แนะนำ:</strong> ควรเพิ่มหัวข้อ TOR ให้ครบถ้วนมากขึ้น
+                </div>`;
+            } else if (percent >= 80) {
+                html += `<div style="color: var(--success);">
+                    <strong>✅ ดีมาก:</strong> TOR มีความครบถ้วนสูง
+                </div>`;
+            }
+            
+            return html || '<div style="color: var(--text-muted);">ไม่มีคำแนะนำเพิ่มเติม</div>';
+        }
+        
+        // Render Comparison Table
+        function renderComparisonTable() {
+            const table = document.getElementById('comparison-table');
+            
+            // Create header
+            let html = '<thead><tr><th>หัวข้อ TOR</th>';
+            torData.projectTypes.forEach(project => {
+                html += `<th>${project.name}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+            
+            // Create rows
+            torData.sectionNames.forEach(sectionName => {
+                html += `<tr><td><strong>${sectionName}</strong></td>`;
+                
+                torData.projectTypes.forEach(project => {
+                    const isActive = project.sections[sectionName];
+                    html += `<td style="text-align: center;">
+                        <span class="${isActive ? 'check-icon' : 'cross-icon'}">
+                            ${isActive ? '✅' : '❌'}
+                        </span>
+                    </td>`;
+                });
+                
+                html += '</tr>';
+            });
+            
+            html += '</tbody>';
+            table.innerHTML = html;
+        }
+        
+        // Export to CSV
+        function exportToCSV() {
+            let csv = 'ประเภทโครงการ,' + torData.sectionNames.join(',') + '\n';
+            
+            torData.projectTypes.forEach(project => {
+                csv += project.name + ',';
+                csv += torData.sectionNames.map(name => project.sections[name] ? '✅' : '❌').join(',');
+                csv += '\n';
+            });
+            
+            downloadFile(csv, 'tor-config.csv', 'text/csv');
+            showNotification('ส่งออก CSV สำเร็จ', 'success');
+        }
+        
+        // Export to JSON
+        function exportToJSON() {
+            const json = JSON.stringify(torData, null, 2);
+            downloadFile(json, 'tor-config.json', 'application/json');
+            showNotification('ส่งออก JSON สำเร็จ', 'success');
+        }
+        
+        // Export configuration
+        function exportConfig() {
+            exportToJSON();
+        }
+        
+        // Download file
+        function downloadFile(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Refresh data
+        function refreshData() {
+            loadData();
+        }
+        
+        // Show/hide loading
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            loading.style.display = show ? 'flex' : 'none';
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const text = document.getElementById('notification-text');
+            
+            text.textContent = message;
+            notification.className = 'notification ' + type;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Tracker — ติดตามสถานะโครงการ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #cc785c;
+            --primary-active: #a9583e;
+            --canvas: #faf9f5;
+            --surface-soft: #f5f0e8;
+            --surface-card: #efe9de;
+            --surface-dark: #181715;
+            --hairline: #e6dfd8;
+            --ink: #141413;
+            --body: #3d3d3a;
+            --muted: #6c6a64;
+            --on-primary: #ffffff;
+            --success: #5db872;
+            --warning: #d4a017;
+            --error: #c64545;
+            --space-xs: 8px;
+            --space-sm: 12px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-xxl: 48px;
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--canvas);
+            color: var(--body);
+            line-height: 1.55;
+            font-size: 16px;
+            min-height: 100vh;
+        }
+
+        .font-display {
+            font-family: 'Cormorant Garamond', Garamond, 'Times New Roman', serif;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            color: var(--ink);
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 64px;
+            background: var(--canvas);
+            border-bottom: 1px solid var(--hairline);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-xl);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .nav-logo {
+            width: 32px; height: 32px;
+            background: var(--primary);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .nav-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 22px;
+            font-weight: 500;
+            color: var(--ink);
+            letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .nav-item {
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--muted);
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .nav-item:hover { color: var(--ink); background: var(--surface-soft); }
+        .nav-item.active { color: var(--ink); background: var(--surface-card); }
+
+        /* Main Layout */
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 96px var(--space-xl) var(--space-xxl);
+        }
+
+        /* Hero */
+        .hero {
+            padding: var(--space-xl) 0;
+            margin-bottom: var(--space-xl);
+        }
+
+        .hero-title { font-size: 48px; margin-bottom: var(--space-md); }
+        .hero-subtitle { font-size: 18px; color: var(--muted); }
+
+        /* Stats */
+        .stats-bar {
+            display: flex;
+            gap: var(--space-xl);
+            padding: var(--space-lg) 0;
+            margin-bottom: var(--space-xl);
+            border-bottom: 1px solid var(--hairline);
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 36px;
+            font-weight: 400;
+            color: var(--ink);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 500;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        .filter-select {
+            padding: 8px 14px;
+            background: var(--canvas);
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-md);
+            color: var(--ink);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            min-width: 180px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--on-primary);
+        }
+
+        .btn-primary:hover { background: var(--primary-active); }
+
+        .btn-secondary {
+            background: var(--canvas);
+            color: var(--ink);
+            border: 1px solid var(--hairline);
+        }
+
+        .btn-secondary:hover { background: var(--surface-soft); }
+
+        .btn-sm {
+            padding: 6px 14px;
+            height: 32px;
+            font-size: 13px;
+        }
+
+        /* Project Table */
+        .project-table-container {
+            background: var(--surface-card);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--hairline);
+        }
+
+        .project-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .project-table thead {
+            background: var(--surface-soft);
+        }
+
+        .project-table th {
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--hairline);
+            white-space: nowrap;
+        }
+
+        .project-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--hairline-soft);
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .project-table tbody tr:hover {
+            background: var(--surface-soft);
+        }
+
+        .project-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: var(--radius-pill);
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-badge.approve {
+            background: rgba(93, 184, 114, 0.15);
+            color: var(--success);
+        }
+
+        .status-badge.reject {
+            background: rgba(198, 69, 69, 0.15);
+            color: var(--error);
+        }
+
+        .status-badge.not-started {
+            background: rgba(108, 106, 100, 0.1);
+            color: var(--muted);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.approve { background: var(--success); }
+        .status-dot.reject { background: var(--error); }
+        .status-dot.not-started { background: var(--muted); }
+
+        /* Project Name Cell */
+        .project-name-cell {
+            font-weight: 500;
+            color: var(--ink);
+            max-width: 300px;
+        }
+
+        .project-desc {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        /* Actions */
+        .actions-cell {
+            display: flex;
+            gap: var(--space-xs);
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border-radius: var(--radius-md);
+            justify-content: center;
+            background: var(--canvas);
+            border: 1px solid var(--hairline);
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-icon:hover {
+            background: var(--surface-soft);
+            color: var(--ink);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(24, 23, 21, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: var(--space-xl);
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: var(--canvas);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xxl);
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header { margin-bottom: var(--space-xl); }
+
+        .modal-title {
+            font-size: 28px;
+            margin-bottom: var(--space-xs);
+        }
+
+        .modal-subtitle { color: var(--muted); font-size: 16px; }
+
+        .form-group { margin-bottom: var(--space-lg); }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--body);
+            margin-bottom: var(--space-xs);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--canvas);
+            border: 1px solid var(--hairline);
+            border-radius: var(--radius-md);
+            color: var(--ink);
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.15);
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+
+        .status-select-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .status-select-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: flex-end;
+            margin-top: var(--space-xl);
+            padding-top: var(--space-lg);
+            border-top: 1px solid var(--hairline);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: var(--space-xl);
+            right: var(--space-xl);
+            padding: var(--space-md) var(--space-lg);
+            background: var(--surface-dark);
+            color: var(--on-primary);
+            border-radius: var(--radius-lg);
+            font-size: 14px;
+            z-index: 3000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--error); }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-xxl);
+            color: var(--muted);
+        }
+
+        .spinner {
+            width: 24px; height: 24px;
+            border: 2px solid var(--hairline);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: var(--space-sm);
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-xxl);
+            color: var(--muted);
+        }
+
+        .empty-state-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
+            color: var(--ink);
+            margin-bottom: var(--space-sm);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-title { font-size: 36px; }
+            .project-table-container { overflow-x: auto; }
+            .project-table { min-width: 1000px; }
+        }
+
+        @media (max-width: 768px) {
+            .main { padding: 80px var(--space-md) var(--space-xl); }
+            .nav { padding: 0 var(--space-md); }
+            .nav-menu { display: none; }
+            .hero-title { font-size: 32px; }
+            .stats-bar { flex-wrap: wrap; gap: var(--space-lg); }
+            .form-row { grid-template-columns: 1fr; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+        }
+
+        /* Approval Flow */
+        .approval-flow {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .approval-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .approval-label {
+            font-size: 11px;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .approval-arrow {
+            color: var(--hairline);
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-brand">
+            <div class="nav-logo">SF</div>
+            <div class="nav-title">School Financial Approval</div>
+        </div>
+        <div class="nav-menu">
+            <button class="nav-item" onclick="window.location.href='school-financial-approval.html'">หน้าหลัก</button>
+            <button class="nav-item" onclick="window.location.href='tor-manager-claude.html'">TOR Manager</button>
+            <button class="nav-item active">ติดตามสถานะ</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+        <section class="hero">
+            <h1 class="font-display hero-title">ติดตามสถานะโครงการ</h1>
+            <p class="hero-subtitle">ดูสถานะการอนุมัติโครงการทั้งหมด ตามปีงบประมาณ</p>
+        </section>
+
+        <!-- Stats -->
+        <div class="stats-bar">
+            <div class="stat">
+                <div class="stat-value" id="stat-total">-</div>
+                <div class="stat-label">โครงการทั้งหมด</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="stat-approved">-</div>
+                <div class="stat-label">อนุมัติแล้ว</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="stat-pending">-</div>
+                <div class="stat-label">รอดำเนินการ</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="stat-rejected">-</div>
+                <div class="stat-label">ไม่อนุมัติ</div>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label class="filter-label">ปีงบประมาณ</label>
+                <select class="filter-select" id="filter-year" onchange="filterProjects()">
+                    <option value="">ทั้งหมด</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">ประเภทโครงการ</label>
+                <select class="filter-select" id="filter-type" onchange="filterProjects()">
+                    <option value="">ทั้งหมด</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">สถานะ</label>
+                <select class="filter-select" id="filter-status" onchange="filterProjects()">
+                    <option value="">ทั้งหมด</option>
+                    <option value="Approve">อนุมัติ</option>
+                    <option value="Reject">ไม่อนุมัติ</option>
+                    <option value="Not Started">ยังไม่เริ่ม</option>
+                </select>
+            </div>
+            <div style="margin-left: auto;">
+                <button class="btn btn-primary" onclick="showAddModal()">+ เพิ่มโครงการ</button>
+            </div>
+        </div>
+
+        <!-- Project Table -->
+        <div class="project-table-container">
+            <table class="project-table">
+                <thead>
+                    <tr>
+                        <th>รหัส</th>
+                        <th>ชื่อโครงการ</th>
+                        <th>ประเภท</th>
+                        <th>ปีงบประมาณ</th>
+                        <th>หัวหน้าหน่วยงาน</th>
+                        <th>หัวหน้าฝ่ายงบฯ</th>
+                        <th>ผู้อำนวยการ</th>
+                        <th>หมายเหตุ</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="project-table-body">
+                    <tr>
+                        <td colspan="9" class="loading">
+                            <div class="spinner"></div>
+                            กำลังโหลดข้อมูล...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title font-display" id="modal-title">เพิ่มโครงการใหม่</h2>
+                <p class="modal-subtitle" id="modal-subtitle">กรอกข้อมูลโครงการ</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">ชื่อโครงการ *</label>
+                <input type="text" class="form-input" id="project-name" placeholder="ชื่อโครงการ">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">ประเภทโครงการ *</label>
+                    <select class="form-select" id="project-type">
+                        <option value="">เลือกประเภท</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ปีงบประมาณ *</label>
+                    <select class="form-select" id="project-year">
+                        <option value="">เลือกปี</option>
+                        <option value="ปีงบประมาณ 2567">ปีงบประมาณ 2567</option>
+                        <option value="ปีงบประมาณ 2568">ปีงบประมาณ 2568</option>
+                        <option value="ปีงบประมาณ 2569">ปีงบประมาณ 2569</option>
+                        <option value="ปีงบประมาณ 2570">ปีงบประมาณ 2570</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">คำอธิบายโครงการ</label>
+                <textarea class="form-textarea" id="project-desc" placeholder="รายละเอียดโครงการ"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">หัวหน้าหน่วยงาน</label>
+                    <select class="form-select" id="status-head">
+                        <option value="Not Started">Not Started</option>
+                        <option value="Approve">Approve</option>
+                        <option value="Reject">Reject</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">หัวหน้าฝ่ายงบประมาณ</label>
+                    <select class="form-select" id="status-budget">
+                        <option value="Not Started">Not Started</option>
+                        <option value="Approve">Approve</option>
+                        <option value="Reject">Reject</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">ผู้อำนวยการโรงเรียน</label>
+                    <select class="form-select" id="status-director">
+                        <option value="Not Started">Not Started</option>
+                        <option value="Approve">Approve</option>
+                        <option value="Reject">Reject</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">หมายเหตุ</label>
+                    <input type="text" class="form-input" id="project-note" placeholder="หมายเหตุ">
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal()">ยกเลิก</button>
+                <button class="btn btn-primary" onclick="saveProject()">บันทึก</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span id="toast-message">สำเร็จ</span>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8765';
+        let projects = [];
+        let projectTypes = [];
+        let editingId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+        });
+
+        async function loadData() {
+            try {
+                const [projectsRes, typesRes, yearsRes] = await Promise.all([
+                    fetch(`${API_BASE}/api/tracking/projects`),
+                    fetch(`${API_BASE}/api/tor/projects`),
+                    fetch(`${API_BASE}/api/tracking/years`)
+                ]);
+
+                const projectsData = await projectsRes.json();
+                const typesData = await typesRes.json();
+                const yearsData = await yearsRes.json();
+
+                if (projectsData.success) {
+                    projects = projectsData.data;
+                    renderProjects();
+                    renderStats();
+                }
+
+                if (typesData.success) {
+                    projectTypes = typesData.data.map(p => p.name);
+                    populateProjectTypes();
+                }
+
+                if (yearsData.success) {
+                    populateYears(yearsData.data);
+                }
+
+                showToast('โหลดข้อมูลสำเร็จ', 'success');
+            } catch (error) {
+                console.error('Error:', error);
+                loadFallbackData();
+            }
+        }
+
+        function loadFallbackData() {
+            projects = [
+                { 'ID': 'P001', 'ชื่อโครงการ': 'ระบบจัดการห้องสมุดอัจฉริยะ', 'ประเภทโครงการ': 'IT / Digital Transformation', 'คำอธิบายโครงการ': 'พัฒนาระบบห้องสมุดดิจิทัล', 'ปีงบประมาณ': 'ปีงบประมาณ 2568', 'หัวหน้าหน่วยงาน': 'Approve', 'หัวหน้าฝ่ายงบประมาณ': 'Approve', 'ผู้อำนวยการโรงเรียน': 'Not Started', 'หมายเหตุ': 'รอการอนุมัติจากผู้อำนวยการ' },
+                { 'ID': 'P002', 'ชื่อโครงการ': 'ก่อสร้างอาคารเรียนเพิ่มเติม', 'ประเภทโครงการ': 'ก่อสร้าง', 'คำอธิบายโครงการ': 'ก่อสร้างอาคารเรียน 3 ชั้น', 'ปีงบประมาณ': 'ปีงบประมาณ 2568', 'หัวหน้าหน่วยงาน': 'Approve', 'หัวหน้าฝ่ายงบประมาณ': 'Approve', 'ผู้อำนวยการโรงเรียน': 'Approve', 'หมายเหตุ': 'อนุมัติเรียบร้อย' }
+            ];
+            projectTypes = ['จัดซื้อจัดจ้างทั่วไป', 'IT / Digital Transformation', 'ก่อสร้าง', 'จ้างที่ปรึกษา', 'Cybersecurity'];
+            renderProjects();
+            renderStats();
+            populateProjectTypes();
+            showToast('ใช้ข้อมูลตัวอย่าง', 'warning');
+        }
+
+        function populateProjectTypes() {
+            const selects = [document.getElementById('project-type'), document.getElementById('filter-type')];
+            selects.forEach(select => {
+                if (!select) return;
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">เลือกประเภท</option>';
+                projectTypes.forEach(type => {
+                    select.innerHTML += `<option value="${type}">${type}</option>`;
+                });
+                select.value = currentValue;
+            });
+        }
+
+        function populateYears(years) {
+            const select = document.getElementById('filter-year');
+            select.innerHTML = '<option value="">ทั้งหมด</option>';
+            years.forEach(year => {
+                select.innerHTML += `<option value="${year}">${year}</option>`;
+            });
+        }
+
+        function renderProjects() {
+            const tbody = document.getElementById('project-table-body');
+            const filtered = getFilteredProjects();
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="empty-state">
+                            <div class="empty-state-title font-display">ไม่พบข้อมูล</div>
+                            <p>ไม่พบโครงการที่ตรงกับเงื่อนไข</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(project => {
+                const headStatus = project['หัวหน้าหน่วยงาน'] || 'Not Started';
+                const budgetStatus = project['หัวหน้าฝ่ายงบประมาณ'] || 'Not Started';
+                const directorStatus = project['ผู้อำนวยการโรงเรียน'] || 'Not Started';
+
+                return `
+                    <tr>
+                        <td>${project['ID'] || '-'}</td>
+                        <td>
+                            <div class="project-name-cell">${project['ชื่อโครงการ'] || '-'}</div>
+                            <div class="project-desc">${project['คำอธิบายโครงการ'] || ''}</div>
+                        </td>
+                        <td>${project['ประเภทโครงการ'] || '-'}</td>
+                        <td>${project['ปีงบประมาณ'] || '-'}</td>
+                        <td>${renderStatusBadge(headStatus)}</td>
+                        <td>${renderStatusBadge(budgetStatus)}</td>
+                        <td>${renderStatusBadge(directorStatus)}</td>
+                        <td>${project['หมายเหตุ'] || '-'}</td>
+                        <td>
+                            <div class="actions-cell">
+                                <button class="btn-icon" onclick="editProject('${project['ID']}')" title="แก้ไข">✎</button>
+                                <button class="btn-icon" onclick="deleteProject('${project['ID']}')" title="ลบ">🗑</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderStatusBadge(status) {
+            const statusClass = status === 'Approve' ? 'approve' : status === 'Reject' ? 'reject' : 'not-started';
+            const statusText = status === 'Approve' ? 'อนุมัติ' : status === 'Reject' ? 'ไม่อนุมัติ' : 'ยังไม่เริ่ม';
+            return `
+                <span class="status-badge ${statusClass}">
+                    <span class="status-dot ${statusClass}"></span>
+                    ${statusText}
+                </span>
+            `;
+        }
+
+        function getFilteredProjects() {
+            const yearFilter = document.getElementById('filter-year').value;
+            const typeFilter = document.getElementById('filter-type').value;
+            const statusFilter = document.getElementById('filter-status').value;
+
+            return projects.filter(project => {
+                if (yearFilter && project['ปีงบประมาณ'] !== yearFilter) return false;
+                if (typeFilter && project['ประเภทโครงการ'] !== typeFilter) return false;
+                if (statusFilter) {
+                    const statuses = [
+                        project['หัวหน้าหน่วยงาน'],
+                        project['หัวหน้าฝ่ายงบประมาณ'],
+                        project['ผู้อำนวยการโรงเรียน']
+                    ];
+                    if (!statuses.includes(statusFilter)) return false;
+                }
+                return true;
+            });
+        }
+
+        function filterProjects() {
+            renderProjects();
+        }
+
+        function renderStats() {
+            const total = projects.length;
+            let approved = 0, pending = 0, rejected = 0;
+
+            projects.forEach(project => {
+                const statuses = [
+                    project['หัวหน้าหน่วยงาน'],
+                    project['หัวหน้าฝ่ายงบประมาณ'],
+                    project['ผู้อำนวยการโรงเรียน']
+                ];
+
+                if (statuses.every(s => s === 'Approve')) approved++;
+                else if (statuses.some(s => s === 'Reject')) rejected++;
+                else pending++;
+            });
+
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-approved').textContent = approved;
+            document.getElementById('stat-pending').textContent = pending;
+            document.getElementById('stat-rejected').textContent = rejected;
+        }
+
+        // Modal functions
+        function showAddModal() {
+            editingId = null;
+            document.getElementById('modal-title').textContent = 'เพิ่มโครงการใหม่';
+            document.getElementById('modal-subtitle').textContent = 'กรอกข้อมูลโครงการ';
+            clearForm();
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function editProject(id) {
+            const project = projects.find(p => p['ID'] === id);
+            if (!project) return;
+
+            editingId = id;
+            document.getElementById('modal-title').textContent = 'แก้ไขโครงการ';
+            document.getElementById('modal-subtitle').textContent = project['ชื่อโครงการ'];
+            
+            document.getElementById('project-name').value = project['ชื่อโครงการ'] || '';
+            document.getElementById('project-type').value = project['ประเภทโครงการ'] || '';
+            document.getElementById('project-year').value = project['ปีงบประมาณ'] || '';
+            document.getElementById('project-desc').value = project['คำอธิบายโครงการ'] || '';
+            document.getElementById('status-head').value = project['หัวหน้าหน่วยงาน'] || 'Not Started';
+            document.getElementById('status-budget').value = project['หัวหน้าฝ่ายงบประมาณ'] || 'Not Started';
+            document.getElementById('status-director').value = project['ผู้อำนวยการโรงเรียน'] || 'Not Started';
+            document.getElementById('project-note').value = project['หมายเหตุ'] || '';
+
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            editingId = null;
+        }
+
+        function clearForm() {
+            document.getElementById('project-name').value = '';
+            document.getElementById('project-type').value = '';
+            document.getElementById('project-year').value = '';
+            document.getElementById('project-desc').value = '';
+            document.getElementById('status-head').value = 'Not Started';
+            document.getElementById('status-budget').value = 'Not Started';
+            document.getElementById('status-director').value = 'Not Started';
+            document.getElementById('project-note').value = '';
+        }
+
+        async function saveProject() {
+            const data = {
+                'ชื่อโครงการ': document.getElementById('project-name').value.trim(),
+                'ประเภทโครงการ': document.getElementById('project-type').value,
+                'ปีงบประมาณ': document.getElementById('project-year').value,
+                'คำอธิบายโครงการ': document.getElementById('project-desc').value.trim(),
+                'หัวหน้าหน่วยงาน': document.getElementById('status-head').value,
+                'หัวหน้าฝ่ายงบประมาณ': document.getElementById('status-budget').value,
+                'ผู้อำนวยการโรงเรียน': document.getElementById('status-director').value,
+                'หมายเหตุ': document.getElementById('project-note').value.trim()
+            };
+
+            if (!data['ชื่อโครงการ'] || !data['ประเภทโครงการ'] || !data['ปีงบประมาณ']) {
+                showToast('กรุณากรอกข้อมูลที่จำเป็น', 'error');
+                return;
+            }
+
+            try {
+                let response;
+                if (editingId) {
+                    response = await fetch(`${API_BASE}/api/tracking/projects/${editingId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                } else {
+                    response = await fetch(`${API_BASE}/api/tracking/projects`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    closeModal();
+                    loadData();
+                    showToast(editingId ? 'แก้ไขสำเร็จ' : 'เพิ่มโครงการสำเร็จ', 'success');
+                } else {
+                    showToast(result.error || 'เกิดข้อผิดพลาด', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('บันทึกในระบบชั่วคราว', 'warning');
+            }
+        }
+
+        async function deleteProject(id) {
+            if (!confirm(`ต้องการลบโครงการ "${id}" ใช่หรือไม่?`)) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/tracking/projects/${id}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    loadData();
+                    showToast('ลบสำเร็จ', 'success');
+                }
+            } catch (error) {
+                showToast('ลบในระบบชั่วคราว', 'warning');
+            }
+        }
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Modal events
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+*.json.key
+service-account*.json
+
+# Data & Uploads
+uploads/temp/*
+uploads/documents/*
+!uploads/temp/.gitkeep
+!uploads/documents/.gitkeep
+!uploads/images/.gitkeep
+!uploads/tor/.gitkeep
+data/database/*.db
+data/database/*.sqlite
+data/exports/*.csv
+data/exports/*.xlsx
+data/exports/*.pdf
+
+# Logs
+.logs/*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests
+tests/unit/__pycache__/
+tests/integration/__pycache__/
