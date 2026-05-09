@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School Financial Approval Project</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* ============================================
            School Financial Approval - Single Page App
@@ -13,7 +13,7 @@
         :root {
             --primary: #cc785c;
             --primary-active: #a9583e;
-            --canvas: #faf9f5;
+            --canvas: #FFF8F0;
             --surface-soft: #f5f0e8;
             --surface-card: #efe9de;
             --surface-dark: #181715;
@@ -41,7 +41,8 @@
             --radius-xl: 16px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: var(--canvas); color: var(--body); line-height: 1.55; font-size: 16px; min-height: 100vh; }
+        body { font-family: 'Sarabun', 'Inter', sans-serif; background: var(--canvas); color: var(--body); line-height: 1.6; font-size: 16px; min-height: 100vh; display: flex; flex-direction: column; }
+        .font-thai { font-family: 'Sarabun', sans-serif; }
         .font-display { font-family: 'Cormorant Garamond', serif; font-weight: 400; letter-spacing: -0.02em; line-height: 1.1; color: var(--ink); }
         
         /* Nav */
@@ -52,23 +53,47 @@
         .nav-menu { display: flex; align-items: center; gap: var(--space-xs); }
         .nav-item { padding: 8px 16px; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; color: var(--muted); text-decoration: none; transition: all 0.2s; cursor: pointer; border: none; background: none; font-family: 'Inter', sans-serif; }
         .nav-item:hover { color: var(--ink); background: var(--surface-soft); }
-        .nav-item.active { color: var(--ink); background: var(--surface-card); }
-        .main { max-width: 1400px; margin: 0 auto; padding: 96px var(--space-xl) var(--space-xxl); }
+        .nav-item.active { color: var(--primary); background: rgba(204, 120, 92, 0.1); }
+        .nav-btn-settings { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius-md); font-size: 14px; font-weight: 500; color: var(--primary); text-decoration: none; transition: all 0.2s; cursor: pointer; border: 1.5px solid var(--primary); background: transparent; font-family: 'Inter', sans-serif; }
+        .nav-btn-settings:hover { background: rgba(204, 120, 92, 0.05); }
+        .main { max-width: 1400px; margin: 0 auto; padding: var(--space-xl); }
         
         /* Page Sections */
         .page { display: none; }
         .page.active { display: block; }
         
-        /* Hero */
-        .hero { padding: var(--space-section) 0; text-align: center; max-width: 800px; margin: 0 auto; }
+        /* Hero - Full Width */
+        .hero-wrapper {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            left: 50%;
+            margin-left: -50vw;
+            background: var(--canvas);
+            display: flex;
+            flex-direction: column;
+            padding-top: 64px; /* Reserve space for fixed nav */
+        }
+        .hero {
+            height: 100%;
+            width: 100%;
+            padding: 0 var(--space-xl);
+            text-align: center;
+            background-image: url('assets/images/backgrounds/bg-hero.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0;
+        }
+        
         .hero-title { font-size: 56px; margin-bottom: var(--space-md); }
         .hero-subtitle { font-size: 18px; color: var(--muted); margin-bottom: var(--space-xl); }
         
-        /* Stats */
-        .stats-bar { display: flex; gap: var(--space-xl); padding: var(--space-lg) 0; margin-bottom: var(--space-xl); border-bottom: 1px solid var(--hairline); }
-        .stat { display: flex; flex-direction: column; gap: 4px; }
-        .stat-value { font-family: 'Cormorant Garamond', serif; font-size: 36px; color: var(--ink); line-height: 1; }
-        .stat-label { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
+
         
         /* Feature Cards */
         .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); margin: var(--space-xl) 0; }
@@ -215,8 +240,19 @@
         .btn-submit-tor { background: var(--primary); color: var(--on-primary); border: none; border-radius: var(--radius-md); padding: 12px 32px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; margin-top: var(--space-lg); transition: all 0.2s; }
         .btn-submit-tor:hover { background: var(--primary-active); }
         .btn-submit-tor:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-open-submit { background: linear-gradient(135deg, var(--primary), var(--primary-active)); color: white; border: none; border-radius: var(--radius-md); padding: 14px 32px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin-top: var(--space-xl); transition: all 0.2s; box-shadow: 0 4px 12px rgba(204, 120, 92, 0.3); }
-        .btn-open-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(204, 120, 92, 0.4); }
+        .btn-open-submit { background: linear-gradient(135deg, var(--primary), var(--primary-active)); color: white; border: none; border-radius: 50px; padding: 28px 80px; font-family: 'Sarabun', 'Inter', sans-serif; font-size: 24px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 16px; margin-top: var(--space-xl); transition: all 0.3s; box-shadow: 0 8px 28px rgba(204, 120, 92, 0.4); letter-spacing: 0.5px; }
+        .btn-open-submit:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(204, 120, 92, 0.5); }
+        .btn-open-submit img { width: 32px; height: 32px; object-fit: contain; }
+
+        /* Stats Dashboard */
+        .stats-dashboard { display: flex; justify-content: center; align-items: center; gap: 0; margin: 0; padding: 0 0 var(--space-xl) 0; width: 100%; max-width: 1000px; }
+        .stat-card { background: transparent; padding: 0 var(--space-xxl); display: flex; align-items: center; gap: var(--space-md); transition: all 0.2s; border-right: 1px solid rgba(204, 120, 92, 0.2); }
+        .stat-card:last-child { border-right: none; }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-icon { font-size: 32px; flex-shrink: 0; color: var(--primary); line-height: 1; }
+        .stat-info { display: flex; flex-direction: column; }
+        .stat-value { font-family: 'Sarabun', sans-serif; font-size: 36px; font-weight: 700; color: var(--primary); line-height: 1; }
+        .stat-label { font-family: 'Sarabun', sans-serif; font-size: 14px; color: var(--muted); margin-top: 2px; }
         
         .project-select-add { display: flex; gap: var(--space-sm); align-items: flex-start; }
         .project-select-add select { flex: 1; }
@@ -246,14 +282,22 @@
             .two-column { grid-template-columns: 1fr; }
             .hero-title { font-size: 42px; }
             .team-grid { grid-template-columns: repeat(3, 1fr); }
+            .stats-dashboard { flex-wrap: wrap; gap: var(--space-lg); padding: var(--space-xl) 0; }
         }
         @media (max-width: 768px) {
             .main { padding: 80px var(--space-md) var(--space-xl); }
             .nav { padding: 0 var(--space-md); }
             .nav-menu { display: none; }
+            .hero { padding: 64px var(--space-md) 48px; min-height: auto; }
             .hero-title { font-size: 32px; }
+            .btn-open-submit { padding: 20px 48px; font-size: 20px; }
+            .btn-open-submit img { width: 32px; height: 32px; }
             .feature-grid { grid-template-columns: 1fr; }
-            .stats-bar { flex-wrap: wrap; gap: var(--space-lg); }
+            .stats-dashboard { flex-wrap: wrap; gap: var(--space-md); justify-content: center; }
+            .stat-card { padding: var(--space-md); border-right: none; }
+            .stat-value { font-size: 32px; }
+            .stat-icon { font-size: 24px; }
+            .stat-label { font-size: 14px; }
             .section-grid { grid-template-columns: 1fr; }
             .project-item { flex-direction: column; align-items: flex-start; gap: var(--space-sm); }
             .form-row { grid-template-columns: 1fr; }
@@ -274,8 +318,64 @@
             <button class="nav-item active" onclick="navigateTo('home')">หน้าหลัก</button>
             <button class="nav-item" onclick="navigateTo('tor')">TOR Manager</button>
             <button class="nav-item" onclick="navigateTo('tracker')">ติดตามสถานะ</button>
+            <button class="nav-btn-settings">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+                Settings
+            </button>
         </div>
     </nav>
+
+    <!-- Hero Section - Full Width -->
+    <div class="hero-wrapper">
+        <section class="hero">
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
+                <img src="assets/images/logos/logo.png" alt="School Financial Approval Project Logo" style="height: 120px; width: auto; margin-bottom: var(--space-lg);">
+                <h1 class="font-display hero-title">School Financial<br>Approval Project</h1>
+                <p class="hero-subtitle font-thai">ระบบบริหารงบประมาณและอนุมัติโครงการสำหรับสถานศึกษา<br>รองรับการตรวจสอบความครบถ้วนของ TOR, ตรวจสอบงบประมาณ และ ติดตามสถานะโครงการ</p>
+                <div class="hero-quote">
+                    <blockquote class="font-thai">"เพิ่มประสิทธิภาพการดำเนินงานด้วย AI และระบบอัตโนมัติ (Automation)"</blockquote>
+                </div>
+                <button class="btn-open-submit" onclick="openSubmitTorModal()">
+                    <img src="assets/images/icons/icon-submit.png" alt="Submit" style="width: 40px; height: 40px; object-fit: contain;">
+                    Submit TOR
+                </button>
+            </div>
+            
+            <div class="stats-dashboard">
+                <div class="stat-card">
+                    <div class="stat-icon">📋</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="home-stat-total">-</div>
+                        <div class="stat-label">โครงการทั้งหมด</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="home-stat-approved">-</div>
+                        <div class="stat-label">อนุมัติแล้ว</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="home-stat-pending">-</div>
+                        <div class="stat-label">รอดำเนินการ</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="home-stat-tor-types">-</div>
+                        <div class="stat-label">ประเภทโครงการ</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 
     <!-- Main Content -->
     <main class="main">
@@ -284,36 +384,6 @@
              PAGE 1: HOME / DASHBOARD
              ============================================ -->
         <div id="page-home" class="page active">
-            <section class="hero">
-                <img src="assets/images/logos/logo.png" alt="School Financial Approval Project Logo" style="height: 120px; width: auto; margin-bottom: var(--space-lg);">
-                <h1 class="font-display hero-title">School Financial<br>Approval Project</h1>
-                <p class="hero-subtitle">ระบบบริหารงบประมาณและอนุมัติโครงการสำหรับสถานศึกษา<br>รองรับการตรวจสอบความครบถ้วนของ TOR, ตรวจสอบงบประมาณ และ ติดตามสถานะโครงการ</p>
-                <div class="hero-quote">
-                    <blockquote>"เพิ่มประสิทธิภาพการดำเนินงานด้วย AI และระบบอัตโนมัติ (Automation)"</blockquote>
-                </div>
-                <button class="btn-open-submit" onclick="openSubmitTorModal()">
-                    <span>📄</span> Submit TOR
-                </button>
-            </section>
-
-            <div class="stats-bar">
-                <div class="stat">
-                    <div class="stat-value" id="home-stat-total">-</div>
-                    <div class="stat-label">โครงการทั้งหมด</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value" id="home-stat-approved">-</div>
-                    <div class="stat-label">อนุมัติแล้ว</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value" id="home-stat-pending">-</div>
-                    <div class="stat-label">รอดำเนินการ</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value" id="home-stat-tor-types">-</div>
-                    <div class="stat-label">ประเภทโครงการ</div>
-                </div>
-            </div>
 
             <section style="margin-bottom: var(--space-section);">
                 <h2 class="font-display" style="font-size: 32px; margin-bottom: var(--space-lg);">ฟีเจอร์หลัก</h2>
