@@ -174,6 +174,55 @@
         /* Two Column Layout */
         .two-column { display: grid; grid-template-columns: 380px 1fr; gap: var(--space-xl); align-items: start; }
         
+        /* Hero Quote */
+        .hero-quote { margin: var(--space-xl) auto; max-width: 640px; position: relative; text-align: center; }
+        .hero-quote blockquote {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--muted);
+            text-align: center;
+            position: relative;
+            padding: 0;
+            background: none;
+            border-radius: 0;
+            border: none;
+            letter-spacing: 0.02em;
+            line-height: 1.6;
+        }
+        .hero-quote blockquote::before {
+            display: none;
+        }
+
+        /* Submit TOR Modal */
+        .submit-tor-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(24, 23, 21, 0.75); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 2500; padding: var(--space-xl); transition: opacity 0.3s; }
+        .submit-tor-overlay.active { display: flex; opacity: 1; }
+        .submit-tor-modal { background: var(--canvas); border-radius: var(--radius-xl); padding: var(--space-xxl); max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); transform: translateY(20px); transition: transform 0.3s; }
+        .submit-tor-overlay.active .submit-tor-modal { transform: translateY(0); }
+        .submit-tor-header { text-align: center; margin-bottom: var(--space-xl); }
+        .submit-tor-header h2 { font-size: 32px; margin-bottom: var(--space-xs); }
+        .submit-tor-header p { color: var(--muted); font-size: 15px; }
+        .file-drop-zone { border: 2px dashed var(--hairline); border-radius: var(--radius-lg); padding: var(--space-xl); text-align: center; cursor: pointer; transition: all 0.2s; background: var(--canvas); }
+        .file-drop-zone:hover { border-color: var(--primary); background: var(--surface-soft); }
+        .file-drop-zone.dragover { border-color: var(--primary); background: rgba(204, 120, 92, 0.05); }
+        .file-drop-zone input[type="file"] { display: none; }
+        .file-drop-icon { font-size: 40px; margin-bottom: var(--space-sm); }
+        .file-drop-text { font-size: 14px; color: var(--muted); margin-bottom: var(--space-xs); }
+        .file-drop-hint { font-size: 12px; color: var(--muted); opacity: 0.7; }
+        .file-selected { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-md); background: var(--surface-soft); border-radius: var(--radius-md); margin-top: var(--space-md); }
+        .file-selected-name { font-size: 14px; font-weight: 500; color: var(--ink); }
+        .file-selected-size { font-size: 12px; color: var(--muted); }
+        .btn-submit-tor { background: var(--primary); color: var(--on-primary); border: none; border-radius: var(--radius-md); padding: 12px 32px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; margin-top: var(--space-lg); transition: all 0.2s; }
+        .btn-submit-tor:hover { background: var(--primary-active); }
+        .btn-submit-tor:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-open-submit { background: linear-gradient(135deg, var(--primary), var(--primary-active)); color: white; border: none; border-radius: var(--radius-md); padding: 14px 32px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin-top: var(--space-xl); transition: all 0.2s; box-shadow: 0 4px 12px rgba(204, 120, 92, 0.3); }
+        .btn-open-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(204, 120, 92, 0.4); }
+        
+        .project-select-add { display: flex; gap: var(--space-sm); align-items: flex-start; }
+        .project-select-add select { flex: 1; }
+        .btn-add-project { padding: 10px 16px; background: var(--surface-soft); border: 1px solid var(--hairline); border-radius: var(--radius-md); color: var(--primary); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+        .btn-add-project:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
         /* Callout */
         .callout-coral { background: var(--primary); color: var(--on-primary); border-radius: var(--radius-lg); padding: var(--space-xxl); text-align: center; margin: var(--space-section) 0; }
         .callout-coral h2 { color: var(--on-primary); margin-bottom: var(--space-md); }
@@ -238,7 +287,13 @@
             <section class="hero">
                 <img src="assets/images/logos/logo.png" alt="School Financial Approval Project Logo" style="height: 120px; width: auto; margin-bottom: var(--space-lg);">
                 <h1 class="font-display hero-title">School Financial<br>Approval Project</h1>
-                <p class="hero-subtitle">ระบบบริหารงบประมาณและอนุมัติโครงการสำหรับสถานศึกษา<br>รองรับการตรวจสอบความครบถ้วนของ TOR, ตรวจสอบงบประมาณ และ ติดตามสถานะโครงการ<br>และเพิ่มประสิทธิภาพการดำเนินงานด้วย AI และระบบอัตโนมัติ (Automation)</p>
+                <p class="hero-subtitle">ระบบบริหารงบประมาณและอนุมัติโครงการสำหรับสถานศึกษา<br>รองรับการตรวจสอบความครบถ้วนของ TOR, ตรวจสอบงบประมาณ และ ติดตามสถานะโครงการ</p>
+                <div class="hero-quote">
+                    <blockquote>"เพิ่มประสิทธิภาพการดำเนินงานด้วย AI และระบบอัตโนมัติ (Automation)"</blockquote>
+                </div>
+                <button class="btn-open-submit" onclick="openSubmitTorModal()">
+                    <span>📄</span> Submit TOR
+                </button>
             </section>
 
             <div class="stats-bar">
@@ -529,6 +584,86 @@
                 <button class="btn btn-secondary" onclick="closeTrackerModal()">ยกเลิก</button>
                 <button class="btn btn-primary" onclick="saveTrackerProject()">บันทึก</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Submit TOR Modal -->
+    <div class="submit-tor-overlay" id="submit-tor-overlay">
+        <div class="submit-tor-modal">
+            <div class="submit-tor-header">
+                <h2 class="font-display">Submit TOR</h2>
+                <p>กรอกข้อมูลและแนบไฟล์ TOR เพื่อส่งตรวจสอบ</p>
+            </div>
+            <form id="submit-tor-form" onsubmit="event.preventDefault(); submitTorForm();">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">ชื่อ *</label>
+                        <input type="text" class="form-input" id="submit-tor-firstname" placeholder="ชื่อ" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">นามสกุล *</label>
+                        <input type="text" class="form-input" id="submit-tor-lastname" placeholder="นามสกุล" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">อีเมล *</label>
+                    <input type="email" class="form-input" id="submit-tor-email" placeholder="email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">โครงการ *</label>
+                    <select class="form-select" id="submit-tor-project" onchange="handleProjectSelect(this)" required>
+                        <option value="">เลือกโครงการ</option>
+                    </select>
+                    <div id="new-project-fields" style="display: none; margin-top: var(--space-md); padding: var(--space-md); background: var(--surface-soft); border-radius: var(--radius-md); border: 1px solid var(--hairline);">
+                        <div style="font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: var(--space-sm);">ข้อมูลโครงการใหม่</div>
+                        <div class="form-group" style="margin-bottom: var(--space-sm);">
+                            <label class="form-label" style="font-size: 13px;">ชื่อโครงการ *</label>
+                            <input type="text" class="form-input" id="submit-tor-new-project" placeholder="ชื่อโครงการใหม่">
+                        </div>
+                        <div class="form-row" style="margin-bottom: var(--space-sm);">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label" style="font-size: 13px;">ประเภทโครงการ *</label>
+                                <select class="form-select" id="submit-tor-new-project-type">
+                                    <option value="">เลือกประเภท</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label" style="font-size: 13px;">ปีงบประมาณ *</label>
+                                <select class="form-select" id="submit-tor-new-project-year">
+                                    <option value="">เลือกปี</option>
+                                    <option value="ปีงบประมาณ 2567">ปีงบประมาณ 2567</option>
+                                    <option value="ปีงบประมาณ 2568">ปีงบประมาณ 2568</option>
+                                    <option value="ปีงบประมาณ 2569">ปีงบประมาณ 2569</option>
+                                    <option value="ปีงบประมาณ 2570">ปีงบประมาณ 2570</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" style="font-size: 13px;">คำอธิบายโครงการ</label>
+                            <textarea class="form-textarea" id="submit-tor-new-project-desc" placeholder="รายละเอียดโครงการ" style="min-height: 60px; font-size: 14px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ไฟล์ TOR *</label>
+                    <div class="file-drop-zone" id="file-drop-zone" onclick="document.getElementById('submit-tor-file').click()">
+                        <div class="file-drop-icon">📎</div>
+                        <div class="file-drop-text">คลิกหรือลากไฟล์มาวางที่นี่</div>
+                        <div class="file-drop-hint">รองรับ PDF, DOCX (ขนาดไม่เกิน 10 MB)</div>
+                        <input type="file" id="submit-tor-file" accept=".pdf,.docx" onchange="handleFileSelect(this)">
+                    </div>
+                    <div class="file-selected" id="file-selected-info" style="display: none;">
+                        <span style="font-size: 24px;">📄</span>
+                        <div style="flex: 1;">
+                            <div class="file-selected-name" id="file-selected-name"></div>
+                            <div class="file-selected-size" id="file-selected-size"></div>
+                        </div>
+                        <button type="button" class="btn-icon" onclick="event.stopPropagation(); removeSelectedFile();">✕</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit-tor" id="btn-submit-tor">Submit TOR</button>
+                <button type="button" class="btn btn-secondary" style="width: 100%; margin-top: var(--space-sm);" onclick="closeSubmitTorModal()">ยกเลิก</button>
+            </form>
         </div>
     </div>
 
@@ -989,6 +1124,250 @@
 
         // Enter key on inputs
         document.getElementById('tor-project-name-input').addEventListener('keypress', function(e) { if (e.key === 'Enter') saveTorProject(); });
+
+        // ============================================
+        // SUBMIT TOR MODAL
+        // ============================================
+        let selectedTorFile = null;
+
+        async function openSubmitTorModal() {
+            document.getElementById('submit-tor-overlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            await Promise.all([loadProjectNames(), loadProjectTypes()]);
+        }
+
+        function closeSubmitTorModal() {
+            document.getElementById('submit-tor-overlay').classList.remove('active');
+            document.body.style.overflow = '';
+            resetSubmitTorForm();
+        }
+
+        async function loadProjectNames() {
+            const select = document.getElementById('submit-tor-project');
+            select.innerHTML = '<option value="">กำลังโหลด...</option>';
+            
+            try {
+                const res = await fetch(`${API_BASE}/api/tor/project-names`);
+                const data = await res.json();
+                
+                select.innerHTML = '<option value="">เลือกโครงการ</option>';
+                
+                if (data.success && data.data && data.data.length > 0) {
+                    data.data.forEach(name => {
+                        const option = document.createElement('option');
+                        option.value = name;
+                        option.textContent = name;
+                        select.appendChild(option);
+                    });
+                }
+                
+                // Add option to create new project
+                const newOption = document.createElement('option');
+                newOption.value = '__NEW__';
+                newOption.textContent = '+ เพิ่มโครงการใหม่';
+                newOption.style.fontWeight = '600';
+                newOption.style.color = 'var(--primary)';
+                select.appendChild(newOption);
+            } catch (error) {
+                console.error('Error loading projects:', error);
+                select.innerHTML = '<option value="">ไม่สามารถโหลดได้</option>';
+            }
+        }
+
+        async function loadProjectTypes() {
+            const select = document.getElementById('submit-tor-new-project-type');
+            select.innerHTML = '<option value="">กำลังโหลด...</option>';
+            
+            try {
+                const res = await fetch(`${API_BASE}/api/tor/projects`);
+                const data = await res.json();
+                
+                select.innerHTML = '<option value="">เลือกประเภท</option>';
+                
+                if (data.success && data.data && data.data.length > 0) {
+                    data.data.forEach(project => {
+                        const option = document.createElement('option');
+                        option.value = project.name;
+                        option.textContent = project.name;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading project types:', error);
+                select.innerHTML = '<option value="">ไม่สามารถโหลดได้</option>';
+            }
+        }
+
+        function handleProjectSelect(select) {
+            const newProjectFields = document.getElementById('new-project-fields');
+            if (select.value === '__NEW__') {
+                newProjectFields.style.display = 'block';
+                document.getElementById('submit-tor-new-project').focus();
+            } else {
+                newProjectFields.style.display = 'none';
+            }
+        }
+
+        function resetSubmitTorForm() {
+            document.getElementById('submit-tor-form').reset();
+            selectedTorFile = null;
+            document.getElementById('file-selected-info').style.display = 'none';
+            document.getElementById('file-drop-zone').style.display = 'block';
+            document.getElementById('new-project-fields').style.display = 'none';
+        }
+
+        function handleFileSelect(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            const allowedExts = ['.pdf', '.docx'];
+            const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!allowedTypes.includes(file.type) && !allowedExts.includes(fileExt)) {
+                showToast('รองรับเฉพาะไฟล์ PDF และ DOCX', 'error');
+                input.value = '';
+                return;
+            }
+            
+            selectedTorFile = file;
+            document.getElementById('file-selected-name').textContent = file.name;
+            document.getElementById('file-selected-size').textContent = (file.size / 1024).toFixed(1) + ' KB';
+            document.getElementById('file-drop-zone').style.display = 'none';
+            document.getElementById('file-selected-info').style.display = 'flex';
+        }
+
+        function removeSelectedFile() {
+            selectedTorFile = null;
+            document.getElementById('submit-tor-file').value = '';
+            document.getElementById('file-selected-info').style.display = 'none';
+            document.getElementById('file-drop-zone').style.display = 'block';
+        }
+
+        async function submitTorForm() {
+            const firstName = document.getElementById('submit-tor-firstname').value.trim();
+            const lastName = document.getElementById('submit-tor-lastname').value.trim();
+            const email = document.getElementById('submit-tor-email').value.trim();
+            const projectSelect = document.getElementById('submit-tor-project');
+            let projectName = projectSelect.value;
+            const isNewProject = projectName === '__NEW__';
+            
+            let projectType = '';
+            let projectDescription = '';
+            let budgetYear = '';
+            
+            if (isNewProject) {
+                projectName = document.getElementById('submit-tor-new-project').value.trim();
+                projectType = document.getElementById('submit-tor-new-project-type').value;
+                budgetYear = document.getElementById('submit-tor-new-project-year').value;
+                projectDescription = document.getElementById('submit-tor-new-project-desc').value.trim();
+            }
+            
+            if (!firstName || !lastName || !email) {
+                showToast('กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
+                return;
+            }
+            
+            if (!projectName) {
+                showToast('กรุณาเลือกหรือเพิ่มชื่อโครงการ', 'error');
+                return;
+            }
+            
+            if (isNewProject) {
+                if (!projectType) {
+                    showToast('กรุณาเลือกประเภทโครงการ', 'error');
+                    return;
+                }
+                if (!budgetYear) {
+                    showToast('กรุณาเลือกปีงบประมาณ', 'error');
+                    return;
+                }
+            }
+            
+            if (!selectedTorFile) {
+                showToast('กรุณาแนบไฟล์ TOR', 'error');
+                return;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showToast('กรุณากรอกอีเมลให้ถูกต้อง', 'error');
+                return;
+            }
+            
+            const btn = document.getElementById('btn-submit-tor');
+            btn.disabled = true;
+            btn.textContent = 'กำลังส่ง...';
+            
+            try {
+                // Read file as base64
+                const fileData = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result.split(',')[1]);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(selectedTorFile);
+                });
+                
+                const payload = {
+                    firstName,
+                    lastName,
+                    email,
+                    projectName,
+                    isNewProject,
+                    projectType,
+                    projectDescription,
+                    budgetYear,
+                    fileName: selectedTorFile.name,
+                    fileData: fileData
+                };
+                
+                const res = await fetch(`${API_BASE}/api/tor/submit`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    showToast('ส่ง TOR สำเร็จ', 'success');
+                    closeSubmitTorModal();
+                } else {
+                    showToast(data.error || 'เกิดข้อผิดพลาด', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Submit TOR';
+            }
+        }
+
+        // Drag and drop
+        const dropZone = document.getElementById('file-drop-zone');
+        if (dropZone) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+            });
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+            });
+            dropZone.addEventListener('drop', (e) => {
+                const files = e.dataTransfer.files;
+                if (files.length) {
+                    document.getElementById('submit-tor-file').files = files;
+                    handleFileSelect(document.getElementById('submit-tor-file'));
+                }
+            }, false);
+        }
+
+        // Close modal only by clicking the cancel button, not by clicking outside
+        // document.getElementById('submit-tor-overlay').addEventListener('click', function(e) { if (e.target === this) closeSubmitTorModal(); });
     </script>
 </body>
 </html>

@@ -28,11 +28,17 @@ Endpoints:
 
 import json
 import urllib.parse
+import base64
+import os
 from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+
+# Upload configuration
+UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'uploads', 'documents')
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # Configuration
 SPREADSHEET_ID = '1Plh_0AodTomKLyP8zrBp9FOriHXVm_uGYIO4TVHSozg'
@@ -297,6 +303,162 @@ class GoogleSheetsClient:
         
         return projects
     
+    def get_all_project_names(self):
+        """Get list of all project names from Projects sheet"""
+        data = self.get_projects_data()
+        if not data or len(data) < 2:
+            return []
+        
+        headers = data[0]
+        name_col = None
+        for i, h in enumerate(headers):
+            if h == 'ชื่อโครงการ':
+                name_col = i
+                break
+        
+        if name_col is None:
+            return []
+        
+        names = []
+        for row in data[1:]:
+            if len(row) > name_col and row[name_col]:
+                names.append(row[name_col])
+        
+        return names
+    
+    def ensure_tor_submissions_sheet(self):
+        """Ensure TOR_Submissions sheet exists, create if not"""
+        try:
+            spreadsheet = self.service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID).execute()
+            sheet_exists = False
+            for sheet in spreadsheet['sheets']:
+                if sheet['properties']['title'] == 'TOR_Submissions':
+                    sheet_exists = True
+                    break
+            
+            if not sheet_exists:
+                # Create new sheet
+                self.service.spreadsheets().batchUpdate(
+                    spreadsheetId=SPREADSHEET_ID,
+                    body={
+                        'requests': [{
+                            'addSheet': {
+                                'properties': {
+                                    'title': 'TOR_Submissions',
+                                    'gridProperties': {
+                                        'rowCount': 1000,
+                                        'columnCount': 10
+                                    }
+                                }
+                            }
+                        }]
+                    }
+                ).execute()
+                
+                # Add headers
+                headers = ['ID', 'วันที่ส่ง', 'ชื่อ', 'นามสกุล', 'อีเมล', 'ชื่อโครงการ', 'ชื่อไฟล์', 'สถานะ', 'หมายเหตุ', 'เส้นทางไฟล์']
+                self.service.spreadsheets().values().update(
+                    spreadsheetId=SPREADSHEET_ID,
+                    range='TOR_Submissions!A1',
+                    valueInputOption='RAW',
+                    body={'values': [headers]}
+                ).execute()
+        except Exception as e:
+            print(f"Error ensuring TOR_Submissions sheet: {e}")
+    
+    def add_tor_submission(self, submission_data):
+        """Add a new TOR submission to the sheet"""
+        self.ensure_tor_submissions_sheet()
+        
+        # Get existing submissions to generate ID
+        result = self.service.spreadsheets().values().get(
+            spreadsheetId=SPREADSHEET_ID,
+            range='TOR_Submissions!A1:A1000'
+        ).execute()
+        
+        values = result.get('values', [])
+        max_num = 0
+        for row in values[1:]:  # Skip header
+            if row and row[0] and row[0].startswith('TOR'):
+                try:
+                    num = int(row[0][3:])
+                    max_num = max(max_num, num)
+                except:
+                    pass
+        
+        new_id = f"TOR{max_num + 1:03d}"
+        
+        row = [
+            new_id,
+            submission_data.get('submittedAt', ''),
+            submission_data.get('firstName', ''),
+            submission_data.get('lastName', ''),
+            submission_data.get('email', ''),
+            submission_data.get('projectName', ''),
+            submission_data.get('fileName', ''),
+            submission_data.get('status', 'รอตรวจสอบ'),
+            submission_data.get('note', ''),
+            submission_data.get('filePath', '')
+        ]
+        
+        self.service.spreadsheets().values().append(
+            spreadsheetId=SPREADSHEET_ID,
+            range='TOR_Submissions!A1',
+            valueInputOption='RAW',
+            insertDataOption='INSERT_ROWS',
+            body={'values': [row]}
+        ).execute()
+        
+        return new_id
+    
+    def add_new_project_to_sheet(self, project_name, project_type='', project_description='', budget_year=''):
+        """Add a new project to Projects sheet with full data"""
+        data = self.get_projects_data()
+        
+        # Generate ID
+        existing_ids = []
+        for row in data[1:]:
+            if row and row[0]:
+                existing_ids.append(row[0])
+        
+        max_num = 0
+        for pid in existing_ids:
+            if pid.startswith('P'):
+                try:
+                    num = int(pid[1:])
+                    max_num = max(max_num, num)
+                except:
+                    pass
+        
+        new_id = f"P{max_num + 1:03d}"
+        
+        now = datetime.now().strftime('%Y-%m-%d')
+        # Columns: ID, ชื่อโครงการ, ประเภทโครงการ, คำอธิบายโครงการ, ปีงบประมาณ, หัวหน้าหน่วยงาน, หัวหน้าฝ่ายงบประมาณ, ผู้อำนวยการโรงเรียน, หมายเหตุ, วันที่สร้าง, วันที่แก้ไขล่าสุด
+        row = [
+            new_id, 
+            project_name, 
+            project_type, 
+            project_description, 
+            budget_year, 
+            'Not Started', 
+            'Not Started', 
+            'Not Started', 
+            '', 
+            now, 
+            now
+        ]
+        
+        self.service.spreadsheets().values().append(
+            spreadsheetId=SPREADSHEET_ID,
+            range='Projects!A1',
+            valueInputOption='RAW',
+            insertDataOption='INSERT_ROWS',
+            body={'values': [row]}
+        ).execute()
+        
+        self.clear_projects_cache()
+        return new_id
+    
     def get_budget_years(self):
         """Get list of unique budget years"""
         data = self.get_projects_data()
@@ -483,6 +645,7 @@ class APIHandler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.send_header('Access-Control-Max-Age', '86400')
         self.end_headers()
     
     def do_OPTIONS(self):
@@ -514,6 +677,10 @@ class APIHandler(BaseHTTPRequestHandler):
                 sections = sheets_client.get_all_sections()
                 self._send_json({'success': True, 'data': sections})
             
+            elif path == '/api/tor/project-names':
+                names = sheets_client.get_all_project_names()
+                self._send_json({'success': True, 'data': names})
+            
             # Project Tracking endpoints
             elif path == '/api/tracking/projects':
                 year = query.get('year', [None])[0]
@@ -542,6 +709,109 @@ class APIHandler(BaseHTTPRequestHandler):
                 sections = body.get('sections', {})
                 result = sheets_client.add_tor_project(name, sections)
                 self._send_json({'success': True, 'data': result}, 201)
+            
+            # TOR Submit endpoint
+            elif path == '/api/tor/submit':
+                body = self._read_body()
+                first_name = body.get('firstName', '').strip()
+                last_name = body.get('lastName', '').strip()
+                email = body.get('email', '').strip()
+                project_name = body.get('projectName', '').strip()
+                is_new_project = body.get('isNewProject', False)
+                project_type = body.get('projectType', '').strip()
+                project_description = body.get('projectDescription', '').strip()
+                budget_year = body.get('budgetYear', '').strip()
+                file_name = body.get('fileName', '')
+                file_data = body.get('fileData', '')
+                
+                if not first_name or not last_name or not email:
+                    raise ValueError("First name, last name, and email are required")
+                
+                if not project_name:
+                    raise ValueError("Project name is required")
+                
+                if is_new_project:
+                    if not project_type:
+                        raise ValueError("Project type is required for new projects")
+                    if not budget_year:
+                        raise ValueError("Budget year is required for new projects")
+                
+                if not file_name or not file_data:
+                    raise ValueError("File is required")
+                
+                # If new project, add to Projects sheet with full details
+                if is_new_project:
+                    try:
+                        sheets_client.add_new_project_to_sheet(
+                            project_name, 
+                            project_type=project_type,
+                            project_description=project_description,
+                            budget_year=budget_year
+                        )
+                    except Exception as e:
+                        print(f"Warning: Could not add new project to sheet: {e}")
+                
+                # Generate unique filename
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                safe_name = ''.join(c if c.isalnum() or c in '._-' else '_' for c in file_name)
+                unique_filename = f"{timestamp}_{safe_name}"
+                file_path = os.path.join(UPLOAD_DIR, unique_filename)
+                
+                # Decode and save file
+                file_bytes = base64.b64decode(file_data)
+                with open(file_path, 'wb') as f:
+                    f.write(file_bytes)
+                
+                # Save to Google Sheet TOR_Submissions
+                submitted_at = datetime.now().isoformat()
+                try:
+                    submission_id = sheets_client.add_tor_submission({
+                        'firstName': first_name,
+                        'lastName': last_name,
+                        'email': email,
+                        'projectName': project_name,
+                        'fileName': unique_filename,
+                        'status': 'รอตรวจสอบ',
+                        'note': 'ส่ง TOR ใหม่' if is_new_project else '',
+                        'filePath': file_path,
+                        'submittedAt': submitted_at
+                    })
+                except Exception as e:
+                    print(f"Warning: Could not save to sheet: {e}")
+                    submission_id = None
+                
+                # Save metadata to JSON
+                metadata = {
+                    'firstName': first_name,
+                    'lastName': last_name,
+                    'email': email,
+                    'projectName': project_name,
+                    'isNewProject': is_new_project,
+                    'projectType': project_type,
+                    'projectDescription': project_description,
+                    'budgetYear': budget_year,
+                    'originalFileName': file_name,
+                    'savedFileName': unique_filename,
+                    'filePath': file_path,
+                    'fileSize': len(file_bytes),
+                    'submittedAt': submitted_at,
+                    'submissionId': submission_id
+                }
+                
+                metadata_path = os.path.join(UPLOAD_DIR, f"{timestamp}_{first_name}_{last_name}.json")
+                with open(metadata_path, 'w', encoding='utf-8') as f:
+                    json.dump(metadata, f, ensure_ascii=False, indent=2)
+                
+                self._send_json({
+                    'success': True,
+                    'data': {
+                        'message': 'TOR submitted successfully',
+                        'fileName': unique_filename,
+                        'fileSize': len(file_bytes),
+                        'projectName': project_name,
+                        'submissionId': submission_id
+                    }
+                }, 201)
             
             # Project Tracking endpoints
             elif path == '/api/tracking/projects':
@@ -627,6 +897,7 @@ def run_server(port=8765):
     print(f"   PUT    /api/tor/projects/{{name}}   - Update project type")
     print(f"   DELETE /api/tor/projects/{{name}}   - Delete project type")
     print(f"   GET    /api/tor/sections          - List all sections")
+    print(f"   POST   /api/tor/submit            - Submit TOR file")
     print(f"")
     print(f"  Project Tracking:")
     print(f"   GET    /api/tracking/projects              - List all projects")
@@ -635,6 +906,8 @@ def run_server(port=8765):
     print(f"   PUT    /api/tracking/projects/{{id}}         - Update project")
     print(f"   DELETE /api/tracking/projects/{{id}}         - Delete project")
     print(f"   GET    /api/tracking/years                 - List budget years")
+    print(f"")
+    print(f"📁 Upload directory: {UPLOAD_DIR}")
     print(f"")
     print(f"Press Ctrl+C to stop")
     
