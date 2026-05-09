@@ -180,6 +180,17 @@
         .callout-coral p { opacity: 0.9; margin-bottom: var(--space-xl); }
         .callout-coral .btn-secondary { background: var(--canvas); color: var(--ink); border: none; }
         
+        /* Team Section */
+        .team-section { margin: var(--space-section) 0; text-align: center; }
+        .team-section-title { font-size: 36px; margin-bottom: var(--space-md); }
+        .team-section-subtitle { color: var(--muted); font-size: 18px; margin-bottom: var(--space-xl); }
+        .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-xl); margin-top: var(--space-xl); }
+        .team-member { display: flex; flex-direction: column; align-items: center; }
+        .team-avatar { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; margin-bottom: var(--space-md); border: 3px solid var(--hairline); transition: all 0.3s; }
+        .team-member:hover .team-avatar { border-color: var(--primary); transform: scale(1.05); }
+        .team-name { font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+        .team-role { font-size: 14px; color: var(--muted); }
+        
         /* Responsive */
         @media (max-width: 1024px) {
             .feature-grid { grid-template-columns: repeat(2, 1fr); }
@@ -197,6 +208,8 @@
             .project-item { flex-direction: column; align-items: flex-start; gap: var(--space-sm); }
             .form-row { grid-template-columns: 1fr; }
             .filter-bar { flex-direction: column; align-items: stretch; }
+            .team-grid { grid-template-columns: repeat(2, 1fr); }
+            .team-avatar { width: 100px; height: 100px; }
         }
     </style>
 </head>
@@ -263,6 +276,34 @@
                         <div class="feature-icon" style="background: linear-gradient(135deg, #8b7cb3, #6b5b93);">📈</div>
                         <div class="feature-title">รายงานและสถิติ</div>
                         <div class="feature-desc">ดูสถิติการใช้งาน เปรียบเทียบประเภทโครงการ และส่งออกรายงาน</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Our Team Section -->
+            <section class="team-section">
+                <h2 class="font-display team-section-title">Our Team</h2>
+                <p class="team-section-subtitle">ทีมพัฒนาระบบ School Financial Approval Project</p>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <img src="assets/images/team/DevJosh.jpg" alt="DevJosh" class="team-avatar">
+                        <div class="team-name">DevJosh</div>
+                        <div class="team-role">Lead Developer</div>
+                    </div>
+                    <div class="team-member">
+                        <img src="assets/images/team/Meoww.jpg" alt="Meoww" class="team-avatar">
+                        <div class="team-name">Meoww</div>
+                        <div class="team-role">UX/UI Designer</div>
+                    </div>
+                    <div class="team-member">
+                        <img src="assets/images/team/reeniizz.jpg" alt="reeniizz" class="team-avatar">
+                        <div class="team-name">reeniizz</div>
+                        <div class="team-role">Project Manager</div>
+                    </div>
+                    <div class="team-member">
+                        <img src="assets/images/team/santiketa.jpg" alt="santiketa" class="team-avatar">
+                        <div class="team-name">santiketa</div>
+                        <div class="team-role">Backend Developer</div>
                     </div>
                 </div>
             </section>
