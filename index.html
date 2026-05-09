@@ -65,14 +65,14 @@
         /* Hero - Full Width */
         .hero-wrapper {
             width: 100vw;
-            height: 100vh;
+            height: calc(100vh - 64px);
             position: relative;
             left: 50%;
-            margin-left: -50vw;
+            transform: translateX(-50%);
             background: var(--canvas);
             display: flex;
             flex-direction: column;
-            padding-top: 64px; /* Reserve space for fixed nav */
+            margin-top: var(--space-xl);
         }
         .hero {
             height: 100%;
@@ -109,7 +109,7 @@
         .card-title { font-size: 18px; font-weight: 500; color: var(--ink); }
         
         /* Buttons */
-        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; height: 40px; border-radius: var(--radius-md); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; height: 40px; border-radius: var(--radius-md); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; text-decoration: none; }
         .btn-primary { background: var(--primary); color: var(--on-primary); }
         .btn-primary:hover { background: var(--primary-active); }
         .btn-secondary { background: var(--canvas); color: var(--ink); border: 1px solid var(--hairline); }
@@ -328,55 +328,6 @@
         </div>
     </nav>
 
-    <!-- Hero Section - Full Width -->
-    <div class="hero-wrapper">
-        <section class="hero">
-            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
-                <img src="assets/images/logos/logo.png" alt="School Financial Approval Project Logo" style="height: 120px; width: auto; margin-bottom: var(--space-lg);">
-                <h1 class="font-display hero-title">School Financial<br>Approval Project</h1>
-                <p class="hero-subtitle font-thai">ระบบบริหารงบประมาณและอนุมัติโครงการสำหรับสถานศึกษา<br>รองรับการตรวจสอบความครบถ้วนของ TOR, ตรวจสอบงบประมาณ และ ติดตามสถานะโครงการ</p>
-                <div class="hero-quote">
-                    <blockquote class="font-thai">"เพิ่มประสิทธิภาพการดำเนินงานด้วย AI และระบบอัตโนมัติ (Automation)"</blockquote>
-                </div>
-                <button class="btn-open-submit" onclick="openSubmitTorModal()">
-                    <img src="assets/images/icons/icon-submit.png" alt="Submit" style="width: 40px; height: 40px; object-fit: contain;">
-                    Submit TOR
-                </button>
-            </div>
-            
-            <div class="stats-dashboard">
-                <div class="stat-card">
-                    <div class="stat-icon">📋</div>
-                    <div class="stat-info">
-                        <div class="stat-value" id="home-stat-total">-</div>
-                        <div class="stat-label">โครงการทั้งหมด</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">✅</div>
-                    <div class="stat-info">
-                        <div class="stat-value" id="home-stat-approved">-</div>
-                        <div class="stat-label">อนุมัติแล้ว</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">⏳</div>
-                    <div class="stat-info">
-                        <div class="stat-value" id="home-stat-pending">-</div>
-                        <div class="stat-label">รอดำเนินการ</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">📊</div>
-                    <div class="stat-info">
-                        <div class="stat-value" id="home-stat-tor-types">-</div>
-                        <div class="stat-label">ประเภทโครงการ</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-
     <!-- Main Content -->
     <main class="main">
         
@@ -385,21 +336,76 @@
              ============================================ -->
         <div id="page-home" class="page active">
 
-            <section style="margin-bottom: var(--space-section);">
+            <!-- Hero Section - Full Width -->
+            <div class="hero-wrapper">
+                <section class="hero">
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%;">
+                        <img src="assets/images/logos/logo.png" alt="School Financial Approval Project Logo" style="height: 120px; width: auto; margin-bottom: var(--space-lg);">
+                        <h1 class="font-display hero-title">School Financial<br>Approval Project</h1>
+                        <p class="hero-subtitle font-thai">ระบบบริหารงบประมาณและอนุมัติโครงการสำหรับสถานศึกษา<br>รองรับการตรวจสอบความครบถ้วนของ TOR, ตรวจสอบงบประมาณ และ ติดตามสถานะโครงการ</p>
+                        <div class="hero-quote">
+                            <blockquote class="font-thai">"เพิ่มประสิทธิภาพการดำเนินงานด้วย AI และระบบอัตโนมัติ (Automation)"</blockquote>
+                        </div>
+                        <button class="btn-open-submit" onclick="openSubmitTorModal()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 12v6"/><path d="m15 15-3-3-3 3"/></svg>
+                            Submit TOR
+                        </button>
+                    </div>
+                    
+                    <div class="stats-dashboard">
+                        <div class="stat-card">
+                            <div class="stat-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg></div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="home-stat-total">-</div>
+                                <div class="stat-label">โครงการทั้งหมด</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="home-stat-approved">-</div>
+                                <div class="stat-label">อนุมัติแล้ว</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="home-stat-pending">-</div>
+                                <div class="stat-label">รอดำเนินการ</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="home-stat-tor-types">-</div>
+                                <div class="stat-label">ประเภทโครงการ</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <section style="margin-bottom: var(--space-section); margin-top: var(--space-section);">
                 <h2 class="font-display" style="font-size: 32px; margin-bottom: var(--space-lg);">ฟีเจอร์หลัก</h2>
                 <div class="feature-grid">
                     <div class="feature-card" onclick="navigateTo('tor')">
-                        <div class="feature-icon">📋</div>
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+                        </div>
                         <div class="feature-title">TOR Manager</div>
                         <div class="feature-desc">จัดการประเภทโครงการและหัวข้อ TOR เปิด/ปิดหัวข้อตามความต้องการ</div>
                     </div>
                     <div class="feature-card" onclick="navigateTo('tracker')">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--accent-amber), #c98a3f);">📊</div>
+                        <div class="feature-icon" style="background: linear-gradient(135deg, var(--accent-amber), #c98a3f);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                        </div>
                         <div class="feature-title">ติดตามสถานะโครงการ</div>
                         <div class="feature-desc">ติดตามสถานะการอนุมัติโครงการ ตามปีงบประมาณ พร้อมค้นหาและกรองข้อมูล</div>
                     </div>
                     <div class="feature-card">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, #8b7cb3, #6b5b93);">📈</div>
+                        <div class="feature-icon" style="background: linear-gradient(135deg, #8b7cb3, #6b5b93);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                        </div>
                         <div class="feature-title">รายงานและสถิติ</div>
                         <div class="feature-desc">ดูสถิติการใช้งาน เปรียบเทียบประเภทโครงการ และส่งออกรายงาน</div>
                     </div>
@@ -442,7 +448,7 @@
             <div class="callout-coral">
                 <h2 class="font-display">เริ่มจัดการโครงการของคุณ</h2>
                 <p>เพิ่มโครงการใหม่และติดตามสถานะการอนุมัติได้ทันที</p>
-                <button class="btn btn-secondary" onclick="navigateTo('tracker')">เปิดติดตามสถานะ →</button>
+                <button class="btn btn-secondary" onclick="navigateTo('tracker')">เปิดติดตามสถานะ <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
             </div>
         </div>
 
@@ -717,18 +723,20 @@
                 <div class="form-group">
                     <label class="form-label">ไฟล์ TOR *</label>
                     <div class="file-drop-zone" id="file-drop-zone" onclick="document.getElementById('submit-tor-file').click()">
-                        <div class="file-drop-icon">📎</div>
+                        <div class="file-drop-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                        </div>
                         <div class="file-drop-text">คลิกหรือลากไฟล์มาวางที่นี่</div>
                         <div class="file-drop-hint">รองรับ PDF, DOCX (ขนาดไม่เกิน 10 MB)</div>
                         <input type="file" id="submit-tor-file" accept=".pdf,.docx" onchange="handleFileSelect(this)">
                     </div>
                     <div class="file-selected" id="file-selected-info" style="display: none;">
-                        <span style="font-size: 24px;">📄</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
                         <div style="flex: 1;">
                             <div class="file-selected-name" id="file-selected-name"></div>
                             <div class="file-selected-size" id="file-selected-size"></div>
                         </div>
-                        <button type="button" class="btn-icon" onclick="event.stopPropagation(); removeSelectedFile();">✕</button>
+                        <button type="button" class="btn-icon" onclick="event.stopPropagation(); removeSelectedFile();"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
                     </div>
                 </div>
                 <button type="submit" class="btn-submit-tor" id="btn-submit-tor">Submit TOR</button>
@@ -890,7 +898,7 @@
                             </div>
                         </div>
                         <div class="project-actions" onclick="event.stopPropagation()">
-                            <button class="btn-icon" onclick="deleteTorProject('${project.name}')">🗑</button>
+                            <button class="btn-icon" onclick="deleteTorProject('${project.name}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
                         </div>
                     </div>`;
             }).join('');
@@ -1078,8 +1086,8 @@
                     <td>${renderStatusBadge(s3)}</td>
                     <td>${project['หมายเหตุ'] || '-'}</td>
                     <td><div style="display:flex;gap:4px">
-                        <button class="btn-icon" onclick="editTrackerProject('${project['ID']}')">✎</button>
-                        <button class="btn-icon" onclick="deleteTrackerProject('${project['ID']}')">🗑</button>
+                        <button class="btn-icon" onclick="editTrackerProject('${project['ID']}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>
+                        <button class="btn-icon" onclick="deleteTrackerProject('${project['ID']}')"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
                     </div></td>
                 </tr>`;
             }).join('');
