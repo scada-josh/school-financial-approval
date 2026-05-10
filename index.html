@@ -260,10 +260,79 @@
         .btn-add-project:hover { background: var(--primary); color: white; border-color: var(--primary); }
 
         /* Callout */
-        .callout-coral { background: var(--primary); color: var(--on-primary); border-radius: var(--radius-lg); padding: var(--space-xxl); text-align: center; margin: var(--space-section) 0; }
-        .callout-coral h2 { color: var(--on-primary); margin-bottom: var(--space-md); }
-        .callout-coral p { opacity: 0.9; margin-bottom: var(--space-xl); }
-        .callout-coral .btn-secondary { background: var(--canvas); color: var(--ink); border: none; }
+        .callout-coral { background: var(--primary); color: var(--on-primary); border-radius: var(--radius-lg); padding: var(--space-xl) var(--space-xxl); margin: var(--space-section) 0; display: flex; align-items: center; justify-content: space-between; gap: var(--space-xl); }
+        .callout-coral-icon { width: 64px; height: 64px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .callout-coral-icon svg { width: 32px; height: 32px; color: var(--on-primary); }
+        .callout-coral-content { flex: 1; text-align: left; }
+        .callout-coral-content h2 { color: var(--on-primary); margin-bottom: var(--space-xs); font-size: 22px; }
+        .callout-coral-content p { opacity: 0.9; margin: 0; font-size: 15px; }
+        .callout-coral-action .btn-secondary { background: var(--canvas); color: var(--ink); border: none; white-space: nowrap; }
+
+        /* Stats Bar */
+        .stats-bar { display: flex; justify-content: center; align-items: stretch; gap: 0; margin: var(--space-xl) 0; background: var(--surface-soft); border-radius: var(--radius-lg); padding: var(--space-lg) 0; }
+        .stat { display: flex; align-items: center; gap: var(--space-md); padding: 0 var(--space-xl); border-right: 1px solid var(--hairline); flex: 1; justify-content: center; }
+        .stat:last-child { border-right: none; }
+        .stat-icon { flex-shrink: 0; color: var(--primary); opacity: 0.7; }
+        .stat-icon svg { width: 28px; height: 28px; }
+        .stat-info { display: flex; flex-direction: column; }
+        .stat-value { font-family: 'Sarabun', sans-serif; font-size: 32px; font-weight: 700; color: var(--primary); line-height: 1; }
+        .stat-label { font-family: 'Sarabun', sans-serif; font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+        /* Footer */
+        .site-footer { border-top: 1px solid var(--hairline); padding: var(--space-lg) var(--space-md); text-align: center; color: var(--muted); font-size: 13px; margin-top: auto; }
+        .site-footer p { margin-bottom: 2px; }
+        .footer-brand { font-weight: 600; color: var(--ink); font-size: 14px; margin-bottom: 4px; }
+        .footer-tagline { color: var(--primary); font-weight: 500; font-size: 13px; }
+        .footer-divider { width: 24px; height: 1.5px; background: var(--primary); margin: var(--space-sm) auto; border-radius: 1px; opacity: 0.6; }
+        .footer-program { max-width: 480px; margin: 0 auto; line-height: 1.6; font-size: 11px; }
+        .footer-university { font-weight: 600; color: var(--ink); margin-top: 4px; font-size: 13px; }
+        
+        /* Settings Modal */
+        .settings-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .settings-overlay.active { display: flex; }
+        .settings-modal { background: var(--canvas); border-radius: var(--radius-xl); width: 900px; max-width: 90vw; height: 600px; max-height: 90vh; display: flex; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .settings-sidebar { width: 240px; background: var(--surface-soft); border-right: 1px solid var(--hairline); padding: var(--space-xl) 0; display: flex; flex-direction: column; }
+        .settings-sidebar-header { padding: 0 var(--space-xl) var(--space-lg); font-size: 20px; font-weight: 600; color: var(--ink); }
+        .settings-menu { display: flex; flex-direction: column; gap: 2px; }
+        .settings-menu-item { display: flex; align-items: center; gap: var(--space-sm); padding: 10px var(--space-xl); font-size: 14px; color: var(--muted); cursor: pointer; transition: all 0.2s; border: none; background: none; width: 100%; text-align: left; }
+        .settings-menu-item:hover { color: var(--ink); background: rgba(204,120,92,0.05); }
+        .settings-menu-item.active { color: var(--primary); background: rgba(204,120,92,0.1); font-weight: 500; }
+        .settings-menu-item svg { width: 18px; height: 18px; }
+        .settings-content { flex: 1; padding: var(--space-xl); overflow-y: auto; }
+        .settings-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xl); }
+        .settings-title { font-size: 24px; font-weight: 600; color: var(--ink); }
+        .settings-close { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--surface-soft); color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .settings-close:hover { background: var(--hairline); color: var(--ink); }
+        .settings-section { display: none; }
+        .settings-section.active { display: block; }
+        .settings-group { margin-bottom: var(--space-xl); }
+        .settings-group-title { font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: var(--space-md); }
+        .settings-field { margin-bottom: var(--space-md); }
+        .settings-label { display: block; font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+        .settings-input { width: 100%; padding: 10px 14px; border: 1px solid var(--hairline); border-radius: var(--radius-md); font-size: 14px; font-family: 'Sarabun', 'Inter', sans-serif; background: var(--canvas); color: var(--body); transition: all 0.2s; }
+        .settings-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(204,120,92,0.1); }
+        .settings-description { font-size: 13px; color: var(--muted); margin-top: 4px; }
+        .settings-toggle { display: flex; align-items: center; justify-content: space-between; padding: var(--space-md) 0; border-bottom: 1px solid var(--hairline); }
+        .settings-toggle:last-child { border-bottom: none; }
+        .toggle-switch { position: relative; width: 44px; height: 24px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--hairline); transition: .3s; border-radius: 24px; }
+        .toggle-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        .toggle-switch input:checked + .toggle-slider { background-color: var(--primary); }
+        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
+        .settings-save-btn { background: var(--primary); color: white; border: none; border-radius: var(--radius-md); padding: 10px 24px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: var(--space-lg); }
+        .settings-save-btn:hover { background: var(--primary-active); }
+        .connector-card { display: flex; align-items: center; justify-content: space-between; padding: var(--space-lg); border: 1px solid var(--hairline); border-radius: var(--radius-lg); margin-bottom: var(--space-md); background: var(--canvas); }
+        .connector-info { display: flex; align-items: center; gap: var(--space-md); }
+        .connector-icon { width: 40px; height: 40px; background: var(--surface-soft); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--primary); }
+        .connector-icon svg { width: 20px; height: 20px; }
+        .connector-name { font-size: 15px; font-weight: 600; color: var(--ink); }
+        .connector-status { font-size: 12px; color: var(--muted); }
+        .connector-actions { display: flex; gap: var(--space-sm); }
+        .connector-btn { padding: 6px 14px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; border: 1px solid var(--hairline); background: var(--canvas); color: var(--body); }
+        .connector-btn:hover { background: var(--surface-soft); }
+        .connector-btn.primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .connector-btn.primary:hover { background: var(--primary-active); }
         
         /* Team Section */
         .team-section { margin: var(--space-section) 0; text-align: center; }
@@ -271,7 +340,7 @@
         .team-section-subtitle { color: var(--muted); font-size: 18px; margin-bottom: var(--space-xl); }
         .team-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-xl); margin-top: var(--space-xl); }
         .team-member { display: flex; flex-direction: column; align-items: center; }
-        .team-avatar { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; margin-bottom: var(--space-md); border: 3px solid var(--hairline); transition: all 0.3s; }
+        .team-avatar { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; object-position: center 25%; margin-bottom: var(--space-md); border: 3px solid var(--hairline); transition: all 0.3s; }
         .team-member:hover .team-avatar { border-color: var(--primary); transform: scale(1.05); }
         .team-name { font-size: 18px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
         .team-role { font-size: 14px; color: var(--muted); }
@@ -304,6 +373,14 @@
             .filter-bar { flex-direction: column; align-items: stretch; }
             .team-grid { grid-template-columns: repeat(2, 1fr); }
             .team-avatar { width: 100px; height: 100px; }
+            .callout-coral { flex-direction: column; text-align: center; padding: var(--space-xl); gap: var(--space-lg); }
+            .callout-coral-content { text-align: center; }
+            .callout-coral-icon { width: 56px; height: 56px; }
+            .callout-coral-icon svg { width: 28px; height: 28px; }
+            .stats-bar { flex-wrap: wrap; gap: var(--space-md); padding: var(--space-md); }
+            .stat { border-right: none; border-bottom: 1px solid var(--hairline); padding: var(--space-md) 0; flex: 1 1 45%; }
+            .stat:nth-child(2) { border-bottom: 1px solid var(--hairline); }
+            .stat:nth-child(3), .stat:nth-child(4) { border-bottom: none; }
         }
     </style>
 </head>
@@ -318,7 +395,7 @@
             <button class="nav-item active" onclick="navigateTo('home')">หน้าหลัก</button>
             <button class="nav-item" onclick="navigateTo('tor')">TOR Manager</button>
             <button class="nav-item" onclick="navigateTo('tracker')">ติดตามสถานะ</button>
-            <button class="nav-btn-settings">
+            <button class="nav-btn-settings" onclick="openSettingsModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
                     <circle cx="12" cy="12" r="3"/>
@@ -327,6 +404,108 @@
             </button>
         </div>
     </nav>
+
+    <!-- Settings Modal -->
+    <div id="settings-overlay" class="settings-overlay" onclick="closeSettingsModal(event)">
+        <div class="settings-modal" onclick="event.stopPropagation()">
+            <div class="settings-sidebar">
+                <div class="settings-sidebar-header">Settings</div>
+                <div class="settings-menu">
+                    <button class="settings-menu-item active" onclick="switchSettingsTab('general')" data-tab="general">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/></svg>
+                        General
+                    </button>
+                    <button class="settings-menu-item" onclick="switchSettingsTab('connectors')" data-tab="connectors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                        Connectors
+                    </button>
+                </div>
+            </div>
+            <div class="settings-content">
+                <!-- General Tab -->
+                <div id="settings-general" class="settings-section active">
+                    <div class="settings-header">
+                        <div class="settings-title">General</div>
+                        <button class="settings-close" onclick="closeSettingsModal()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                    </div>
+                    <div class="settings-group">
+                        <div class="settings-group-title">ระบบ</div>
+                        <div class="settings-field">
+                            <label class="settings-label">ชื่อแอปพลิเคชัน</label>
+                            <input type="text" class="settings-input" id="setting-app-name" value="School Financial Approval Project">
+                            <p class="settings-description">ชื่อที่แสดงบน navbar และ title</p>
+                        </div>
+                        <div class="settings-field">
+                            <label class="settings-label">ภาษาเริ่มต้น</label>
+                            <input type="text" class="settings-input" id="setting-default-lang" value="th">
+                            <p class="settings-description">รหัสภาษา (th, en)</p>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <div class="settings-group-title">การแจ้งเตือน</div>
+                        <div class="settings-toggle">
+                            <div>
+                                <div style="font-size: 14px; font-weight: 500; color: var(--ink);">เปิดใช้งานการแจ้งเตือน</div>
+                                <div style="font-size: 12px; color: var(--muted);">รับการแจ้งเตือนเมื่อมีการอัพเดตสถานะโครงการ</div>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="setting-notifications">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <button class="settings-save-btn" onclick="saveSettings()">บันทึกการตั้งค่า</button>
+                </div>
+                
+                <!-- Connectors Tab -->
+                <div id="settings-connectors" class="settings-section">
+                    <div class="settings-header">
+                        <div class="settings-title">Connectors</div>
+                        <button class="settings-close" onclick="closeSettingsModal()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                    </div>
+                    <div class="settings-group">
+                        <div class="settings-group-title">n8n Automation</div>
+                        <div class="connector-card">
+                            <div class="connector-info">
+                                <div class="connector-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                                </div>
+                                <div>
+                                    <div class="connector-name">n8n Workflow</div>
+                                    <div class="connector-status" id="n8n-status">ไม่ได้เชื่อมต่อ</div>
+                                </div>
+                            </div>
+                            <div class="connector-actions">
+                                <button class="connector-btn primary" id="n8n-toggle-btn" onclick="toggleN8N()">เปิดใช้งาน</button>
+                            </div>
+                        </div>
+                        <div id="n8n-config" style="display: none; margin-top: var(--space-md);">
+                            <div class="settings-field">
+                                <label class="settings-label">Webhook URL</label>
+                                <input type="url" class="settings-input" id="n8n-webhook-url" placeholder="https://your-n8n-instance.com/webhook/...">
+                                <p class="settings-description">URL ของ n8n webhook ที่จะรับข้อมูลจากระบบ</p>
+                            </div>
+                            <div class="settings-field">
+                                <label class="settings-label">API Key</label>
+                                <input type="password" class="settings-input" id="n8n-api-key" placeholder="n8n-api-key-...">
+                                <p class="settings-description">API Key สำหรับการยืนยันตัวตนกับ n8n</p>
+                            </div>
+                            <div class="settings-field">
+                                <label class="settings-label">Workflow ID</label>
+                                <input type="text" class="settings-input" id="n8n-workflow-id" placeholder="workflow-id">
+                                <p class="settings-description">รหัส Workflow ที่ต้องการเรียกใช้</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="settings-save-btn" onclick="saveSettings()">บันทึกการตั้งค่า</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <main class="main">
@@ -418,11 +597,6 @@
                 <p class="team-section-subtitle">ทีมพัฒนาระบบ School Financial Approval Project</p>
                 <div class="team-grid">
                     <div class="team-member">
-                        <img src="assets/images/team/DevJosh.jpg" alt="DevJosh" class="team-avatar">
-                        <div class="team-name">DevJosh</div>
-                        <div class="team-role">Lead Developer</div>
-                    </div>
-                    <div class="team-member">
                         <img src="assets/images/team/Meowww.JPG" alt="Meoww" class="team-avatar">
                         <div class="team-name">Meoww</div>
                         <div class="team-role">Project Manager</div>
@@ -431,6 +605,11 @@
                         <img src="assets/images/team/reeniizz.jpg" alt="reeniizz" class="team-avatar">
                         <div class="team-name">reeniizz</div>
                         <div class="team-role">Intelligent Automation Specialist</div>
+                    </div>
+                    <div class="team-member">
+                        <img src="assets/images/team/DevJosh.jpg" alt="DevJosh" class="team-avatar">
+                        <div class="team-name">DevJosh</div>
+                        <div class="team-role">Lead Developer</div>
                     </div>
                     <div class="team-member">
                         <img src="assets/images/team/santiketa.jpg" alt="santiketa" class="team-avatar">
@@ -446,9 +625,16 @@
             </section>
 
             <div class="callout-coral">
-                <h2 class="font-display">เริ่มจัดการโครงการของคุณ</h2>
-                <p>เพิ่มโครงการใหม่และติดตามสถานะการอนุมัติได้ทันที</p>
-                <button class="btn btn-secondary" onclick="navigateTo('tracker')">เปิดติดตามสถานะ <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+                <div class="callout-coral-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+                </div>
+                <div class="callout-coral-content">
+                    <h2 class="font-display">เริ่มจัดการโครงการของคุณ</h2>
+                    <p>เพิ่มโครงการใหม่และติดตามสถานะการอนุมัติได้ทันที</p>
+                </div>
+                <div class="callout-coral-action">
+                    <button class="btn btn-secondary" onclick="navigateTo('tracker')">เปิดติดตามสถานะ <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+                </div>
             </div>
         </div>
 
@@ -456,27 +642,47 @@
              PAGE 2: TOR MANAGER
              ============================================ -->
         <div id="page-tor" class="page">
-            <section style="padding: var(--space-xl) 0;">
+            <section style="padding: var(--space-xxl) 0 var(--space-xl);">
                 <h1 class="font-display" style="font-size: 40px; margin-bottom: var(--space-md);">TOR Manager</h1>
                 <p style="color: var(--muted); font-size: 18px;">จัดการประเภทโครงการและหัวข้อ TOR สำหรับโครงการภาครัฐ</p>
             </section>
 
             <div class="stats-bar">
                 <div class="stat">
-                    <div class="stat-value" id="tor-stat-projects">-</div>
-                    <div class="stat-label">ประเภทโครงการ</div>
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="tor-stat-projects">-</div>
+                        <div class="stat-label">ประเภทโครงการ</div>
+                    </div>
                 </div>
                 <div class="stat">
-                    <div class="stat-value" id="tor-stat-sections">-</div>
-                    <div class="stat-label">หัวข้อ TOR</div>
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="tor-stat-sections">-</div>
+                        <div class="stat-label">หัวข้อ TOR</div>
+                    </div>
                 </div>
                 <div class="stat">
-                    <div class="stat-value" id="tor-stat-avg">-</div>
-                    <div class="stat-label">หัวข้อเฉลี่ย</div>
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="tor-stat-avg">-</div>
+                        <div class="stat-label">หัวข้อเฉลี่ย</div>
+                    </div>
                 </div>
                 <div class="stat">
-                    <div class="stat-value" id="tor-stat-active">-</div>
-                    <div class="stat-label">หัวข้อที่ใช้</div>
+                    <div class="stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="tor-stat-active">-</div>
+                        <div class="stat-label">หัวข้อที่ใช้</div>
+                    </div>
                 </div>
             </div>
 
@@ -522,7 +728,7 @@
              PAGE 3: PROJECT TRACKER
              ============================================ -->
         <div id="page-tracker" class="page">
-            <section style="padding: var(--space-xl) 0;">
+            <section style="padding: var(--space-xxl) 0 var(--space-xl);">
                 <h1 class="font-display" style="font-size: 40px; margin-bottom: var(--space-md);">ติดตามสถานะโครงการ</h1>
                 <p style="color: var(--muted); font-size: 18px;">ดูสถานะการอนุมัติโครงการทั้งหมด ตามปีงบประมาณ</p>
             </section>
@@ -759,6 +965,125 @@
         let trackerProjectTypes = [];
         let trackerYears = [];
         let editingTrackerId = null;
+
+        // ============================================
+        // SETTINGS MODAL
+        // ============================================
+        let currentSettings = {};
+        
+        function openSettingsModal() {
+            document.getElementById('settings-overlay').classList.add('active');
+            loadSettings();
+        }
+        
+        function closeSettingsModal(event) {
+            if (event && event.target !== document.getElementById('settings-overlay')) return;
+            document.getElementById('settings-overlay').classList.remove('active');
+        }
+        
+        function switchSettingsTab(tab) {
+            document.querySelectorAll('.settings-menu-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.tab === tab) item.classList.add('active');
+            });
+            document.querySelectorAll('.settings-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(`settings-${tab}`).classList.add('active');
+        }
+        
+        async function loadSettings() {
+            try {
+                const res = await fetch(`${API_BASE}/api/settings`);
+                const data = await res.json();
+                
+                if (data.success) {
+                    currentSettings = data.data;
+                    
+                    // General settings
+                    if (data.data.General) {
+                        document.getElementById('setting-app-name').value = data.data.General.APP_NAME || '';
+                        document.getElementById('setting-default-lang').value = data.data.General.DEFAULT_LANG || 'th';
+                    }
+                    
+                    // Connector settings
+                    if (data.data.Connectors) {
+                        const n8nEnabled = data.data.Connectors.N8N_ENABLED === 'true';
+                        document.getElementById('n8n-webhook-url').value = data.data.Connectors.N8N_WEBHOOK_URL || '';
+                        document.getElementById('n8n-api-key').value = data.data.Connectors.N8N_API_KEY || '';
+                        document.getElementById('n8n-workflow-id').value = data.data.Connectors.N8N_WORKFLOW_ID || '';
+                        
+                        updateN8NUi(n8nEnabled);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading settings:', error);
+                showToast('ไม่สามารถโหลดการตั้งค่าได้', 'error');
+            }
+        }
+        
+        function toggleN8N() {
+            const config = document.getElementById('n8n-config');
+            const isVisible = config.style.display === 'block';
+            updateN8NUi(!isVisible);
+        }
+        
+        function updateN8NUi(enabled) {
+            const config = document.getElementById('n8n-config');
+            const status = document.getElementById('n8n-status');
+            const btn = document.getElementById('n8n-toggle-btn');
+            
+            if (enabled) {
+                config.style.display = 'block';
+                status.textContent = 'พร้อมใช้งาน';
+                status.style.color = 'var(--success)';
+                btn.textContent = 'ปิดใช้งาน';
+                btn.classList.remove('primary');
+            } else {
+                config.style.display = 'none';
+                status.textContent = 'ไม่ได้เชื่อมต่อ';
+                status.style.color = 'var(--muted)';
+                btn.textContent = 'เปิดใช้งาน';
+                btn.classList.add('primary');
+            }
+        }
+        
+        async function saveSettings() {
+            try {
+                const n8nEnabled = document.getElementById('n8n-config').style.display === 'block';
+                
+                const settingsData = {
+                    General: {
+                        APP_NAME: document.getElementById('setting-app-name').value,
+                        DEFAULT_LANG: document.getElementById('setting-default-lang').value
+                    },
+                    Connectors: {
+                        N8N_ENABLED: n8nEnabled.toString(),
+                        N8N_WEBHOOK_URL: document.getElementById('n8n-webhook-url').value,
+                        N8N_API_KEY: document.getElementById('n8n-api-key').value,
+                        N8N_WORKFLOW_ID: document.getElementById('n8n-workflow-id').value
+                    }
+                };
+                
+                const res = await fetch(`${API_BASE}/api/settings`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settingsData)
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    showToast('บันทึกการตั้งค่าสำเร็จ', 'success');
+                    closeSettingsModal();
+                } else {
+                    showToast(data.error || 'เกิดข้อผิดพลาด', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                showToast('ไม่สามารถบันทึกการตั้งค่าได้', 'error');
+            }
+        }
 
         // ============================================
         // NAVIGATION
@@ -1447,5 +1772,13 @@
         // Close modal only by clicking the cancel button, not by clicking outside
         // document.getElementById('submit-tor-overlay').addEventListener('click', function(e) { if (e.target === this) closeSubmitTorModal(); });
     </script>
+
+    <footer class="site-footer">
+        <p class="footer-brand">© 2026 School Financial Approval Project. All rights reserved.</p>
+        <p class="footer-tagline">พัฒนาด้วย ❤️ เพื่อสถานศึกษาไทย</p>
+        <div class="footer-divider"></div>
+        <p class="footer-program">โครงการบัณฑิตพันธุ์ใหม่ หลักสูตรประกาศนียบัตร<br>ระบบอัตโนมัติด้วยปัญญาประดิษฐ์เพื่อการปรับเปลี่ยนองค์กรธุรกิจ<br>(AI Automation for Business Transformation)</p>
+        <p class="footer-university">มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าธนบุรี</p>
+    </footer>
 </body>
 </html>

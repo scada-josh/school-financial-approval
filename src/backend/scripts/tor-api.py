@@ -28,6 +28,7 @@ Endpoints:
 
 import json
 import urllib.parse
+import urllib.request
 import base64
 import os
 from datetime import datetime
@@ -79,6 +80,7 @@ class GoogleSheetsClient:
         self.service = self._get_service()
         self._tor_cache = None
         self._projects_cache = None
+        self._settings_cache = None
     
     def _get_service(self):
         credentials = service_account.Credentials.from_service_account_info(
@@ -347,7 +349,7 @@ class GoogleSheetsClient:
                                     'title': 'TOR_Submissions',
                                     'gridProperties': {
                                         'rowCount': 1000,
-                                        'columnCount': 10
+                                        'columnCount': 11
                                     }
                                 }
                             }
@@ -356,7 +358,7 @@ class GoogleSheetsClient:
                 ).execute()
                 
                 # Add headers
-                headers = ['ID', 'วันที่ส่ง', 'ชื่อ', 'นามสกุล', 'อีเมล', 'ชื่อโครงการ', 'ชื่อไฟล์', 'สถานะ', 'หมายเหตุ', 'เส้นทางไฟล์']
+                headers = ['ID', 'วันที่ส่ง', 'ชื่อ', 'นามสกุล', 'อีเมล', 'ชื่อโครงการ', 'ชื่อไฟล์', 'สถานะ', 'เส้นทางไฟล์', 'Connectors', 'หมายเหตุ']
                 self.service.spreadsheets().values().update(
                     spreadsheetId=SPREADSHEET_ID,
                     range='TOR_Submissions!A1',
@@ -366,30 +368,31 @@ class GoogleSheetsClient:
         except Exception as e:
             print(f"Error ensuring TOR_Submissions sheet: {e}")
     
-    def add_tor_submission(self, submission_data):
+    def add_tor_submission(self, submission_data, submission_id=None):
         """Add a new TOR submission to the sheet"""
         self.ensure_tor_submissions_sheet()
         
-        # Get existing submissions to generate ID
-        result = self.service.spreadsheets().values().get(
-            spreadsheetId=SPREADSHEET_ID,
-            range='TOR_Submissions!A1:A1000'
-        ).execute()
-        
-        values = result.get('values', [])
-        max_num = 0
-        for row in values[1:]:  # Skip header
-            if row and row[0] and row[0].startswith('TOR'):
-                try:
-                    num = int(row[0][3:])
-                    max_num = max(max_num, num)
-                except:
-                    pass
-        
-        new_id = f"TOR{max_num + 1:03d}"
+        # Generate ID if not provided
+        if submission_id is None:
+            result = self.service.spreadsheets().values().get(
+                spreadsheetId=SPREADSHEET_ID,
+                range='TOR_Submissions!A1:A1000'
+            ).execute()
+            
+            values = result.get('values', [])
+            max_num = 0
+            for row in values[1:]:  # Skip header
+                if row and row[0] and row[0].startswith('TOR'):
+                    try:
+                        num = int(row[0][3:])
+                        max_num = max(max_num, num)
+                    except:
+                        pass
+            
+            submission_id = f"TOR{max_num + 1:03d}"
         
         row = [
-            new_id,
+            submission_id,
             submission_data.get('submittedAt', ''),
             submission_data.get('firstName', ''),
             submission_data.get('lastName', ''),
@@ -397,8 +400,9 @@ class GoogleSheetsClient:
             submission_data.get('projectName', ''),
             submission_data.get('fileName', ''),
             submission_data.get('status', 'รอตรวจสอบ'),
-            submission_data.get('note', ''),
-            submission_data.get('filePath', '')
+            submission_data.get('filePath', ''),
+            submission_data.get('channel', ''),
+            submission_data.get('note', '')
         ]
         
         self.service.spreadsheets().values().append(
@@ -409,7 +413,7 @@ class GoogleSheetsClient:
             body={'values': [row]}
         ).execute()
         
-        return new_id
+        return submission_id
     
     def add_new_project_to_sheet(self, project_name, project_type='', project_description='', budget_year=''):
         """Add a new project to Projects sheet with full data"""
@@ -630,6 +634,133 @@ class GoogleSheetsClient:
         
         self.clear_projects_cache()
         return {'message': f"Project '{project_id}' deleted"}
+    
+    # ============ Settings Methods ============
+    
+    def _ensure_settings_sheet(self):
+        """Ensure Settings sheet exists"""
+        try:
+            spreadsheet = self.service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID).execute()
+            sheet_exists = any(sheet['properties']['title'] == 'Settings' for sheet in spreadsheet['sheets'])
+            
+            if not sheet_exists:
+                # Create Settings sheet
+                self.service.spreadsheets().batchUpdate(
+                    spreadsheetId=SPREADSHEET_ID,
+                    body={
+                        'requests': [{
+                            'addSheet': {
+                                'properties': {
+                                    'title': 'Settings',
+                                    'gridProperties': {
+                                        'rowCount': 100,
+                                        'columnCount': 3
+                                    }
+                                }
+                            }
+                        }]
+                    }
+                ).execute()
+                
+                # Add headers
+                self.service.spreadsheets().values().update(
+                    spreadsheetId=SPREADSHEET_ID,
+                    range='Settings!A1:C1',
+                    valueInputOption='RAW',
+                    body={'values': [['Category', 'Key', 'Value']]}
+                ).execute()
+                
+                # Add default settings
+                default_settings = [
+                    ['General', 'APP_NAME', 'School Financial Approval Project'],
+                    ['General', 'VERSION', '1.0.0'],
+                    ['General', 'DEFAULT_LANG', 'th'],
+                    ['Connectors', 'N8N_ENABLED', 'false'],
+                    ['Connectors', 'N8N_WEBHOOK_URL', ''],
+                    ['Connectors', 'N8N_API_KEY', ''],
+                    ['Connectors', 'N8N_WORKFLOW_ID', ''],
+                    ['Connectors', 'N8N_DESCRIPTION', 'n8n workflow automation connector']
+                ]
+                
+                self.service.spreadsheets().values().append(
+                    spreadsheetId=SPREADSHEET_ID,
+                    range='Settings!A1',
+                    valueInputOption='RAW',
+                    insertDataOption='INSERT_ROWS',
+                    body={'values': default_settings}
+                ).execute()
+        except Exception as e:
+            print(f"Error ensuring settings sheet: {e}")
+    
+    def get_settings(self):
+        """Get all settings from Settings sheet"""
+        if self._settings_cache is not None:
+            return self._settings_cache
+        
+        self._ensure_settings_sheet()
+        
+        try:
+            result = self.service.spreadsheets().values().get(
+                spreadsheetId=SPREADSHEET_ID,
+                range='Settings!A1:C100'
+            ).execute()
+            
+            data = result.get('values', [])
+            if not data or len(data) < 2:
+                return {}
+            
+            settings = {}
+            for row in data[1:]:
+                if len(row) >= 3:
+                    category, key, value = row[0], row[1], row[2]
+                    if category not in settings:
+                        settings[category] = {}
+                    settings[category][key] = value
+            
+            self._settings_cache = settings
+            return settings
+        except Exception as e:
+            print(f"Error getting settings: {e}")
+            return {}
+    
+    def clear_settings_cache(self):
+        """Clear settings cache"""
+        self._settings_cache = None
+    
+    def update_settings(self, settings_data):
+        """Update settings in Settings sheet"""
+        self._ensure_settings_sheet()
+        
+        # Get current data
+        result = self.service.spreadsheets().values().get(
+            spreadsheetId=SPREADSHEET_ID,
+            range='Settings!A1:C100'
+        ).execute()
+        
+        data = result.get('values', [])
+        if not data:
+            raise ValueError("Settings sheet is empty")
+        
+        # Build update requests
+        updates = []
+        for i, row in enumerate(data[1:], start=2):
+            if len(row) >= 2:
+                category, key = row[0], row[1]
+                if category in settings_data and key in settings_data[category]:
+                    new_value = settings_data[category][key]
+                    updates.append({
+                        'range': f'Settings!C{i}',
+                        'values': [[new_value]]
+                    })
+        
+        if updates:
+            self.service.spreadsheets().values().batchUpdate(
+                spreadsheetId=SPREADSHEET_ID,
+                body={'valueInputOption': 'RAW', 'data': updates}
+            ).execute()
+        
+        self.clear_settings_cache()
+        return {'message': 'Settings updated successfully'}
 
 
 # Initialize client
@@ -690,6 +821,11 @@ class APIHandler(BaseHTTPRequestHandler):
             elif path == '/api/tracking/years':
                 years = sheets_client.get_budget_years()
                 self._send_json({'success': True, 'data': years})
+            
+            # Settings endpoints
+            elif path == '/api/settings':
+                settings = sheets_client.get_settings()
+                self._send_json({'success': True, 'data': settings})
             
             else:
                 self._send_json({'success': False, 'error': 'Not found'}, 404)
@@ -762,20 +898,97 @@ class APIHandler(BaseHTTPRequestHandler):
                 with open(file_path, 'wb') as f:
                     f.write(file_bytes)
                 
+                # Check n8n settings
+                n8n_enabled = False
+                n8n_webhook_url = ''
+                n8n_api_key = ''
+                n8n_workflow_id = ''
+                channel = ''
+                webhook_status = 'ไม่ได้ส่ง'
+                
+                try:
+                    settings = sheets_client.get_settings()
+                    if 'Connectors' in settings:
+                        n8n_enabled = settings['Connectors'].get('N8N_ENABLED', 'false').lower() == 'true'
+                        n8n_webhook_url = settings['Connectors'].get('N8N_WEBHOOK_URL', '')
+                        n8n_api_key = settings['Connectors'].get('N8N_API_KEY', '')
+                        n8n_workflow_id = settings['Connectors'].get('N8N_WORKFLOW_ID', '')
+                except Exception as e:
+                    print(f"Warning: Could not load settings: {e}")
+                
+                # Send to n8n if enabled
+                if n8n_enabled and n8n_webhook_url:
+                    try:
+                        webhook_payload = {
+                            'event': 'tor_submitted',
+                            'submission': {
+                                'firstName': first_name,
+                                'lastName': last_name,
+                                'email': email,
+                                'projectName': project_name,
+                                'isNewProject': is_new_project,
+                                'projectType': project_type,
+                                'projectDescription': project_description,
+                                'budgetYear': budget_year,
+                                'fileName': file_name,
+                                'submittedAt': datetime.now().isoformat()
+                            }
+                        }
+                        
+                        req = urllib.request.Request(
+                            n8n_webhook_url,
+                            data=json.dumps(webhook_payload).encode('utf-8'),
+                            headers={
+                                'Content-Type': 'application/json',
+                                'X-N8N-API-KEY': n8n_api_key,
+                                'X-Workflow-ID': n8n_workflow_id
+                            },
+                            method='POST'
+                        )
+                        
+                        with urllib.request.urlopen(req, timeout=10) as response:
+                            if response.status == 200:
+                                webhook_status = 'ส่งสำเร็จ'
+                                channel = 'n8n Workflow'
+                            else:
+                                webhook_status = f'ส่งไม่สำเร็จ (HTTP {response.status})'
+                                channel = 'n8n Workflow'
+                    except Exception as e:
+                        webhook_status = f'ส่งไม่สำเร็จ: {str(e)}'
+                        channel = 'n8n Workflow'
+                
                 # Save to Google Sheet TOR_Submissions
                 submitted_at = datetime.now().isoformat()
+                
                 try:
+                    # Generate submission ID once
                     submission_id = sheets_client.add_tor_submission({
                         'firstName': first_name,
                         'lastName': last_name,
                         'email': email,
                         'projectName': project_name,
                         'fileName': unique_filename,
-                        'status': 'รอตรวจสอบ',
+                        'status': 'อัพโหลดสำเร็จ',
                         'note': 'ส่ง TOR ใหม่' if is_new_project else '',
                         'filePath': file_path,
-                        'submittedAt': submitted_at
+                        'submittedAt': submitted_at,
+                        'channel': 'Default'
                     })
+                    
+                    # Record 2: n8n connector (if enabled)
+                    if n8n_enabled and channel:
+                        sheets_client.add_tor_submission({
+                            'firstName': first_name,
+                            'lastName': last_name,
+                            'email': email,
+                            'projectName': project_name,
+                            'fileName': unique_filename,
+                            'status': webhook_status,
+                            'note': 'ส่งผ่าน n8n Workflow',
+                            'filePath': file_path,
+                            'submittedAt': submitted_at,
+                            'channel': channel
+                        }, submission_id=submission_id)
                 except Exception as e:
                     print(f"Warning: Could not save to sheet: {e}")
                     submission_id = None
@@ -845,6 +1058,12 @@ class APIHandler(BaseHTTPRequestHandler):
                 project_id = urllib.parse.unquote(path[len('/api/tracking/projects/'):])
                 body = self._read_body()
                 result = sheets_client.update_tracking_project(project_id, body)
+                self._send_json({'success': True, 'data': result})
+            
+            # Settings endpoints
+            elif path == '/api/settings':
+                body = self._read_body()
+                result = sheets_client.update_settings(body)
                 self._send_json({'success': True, 'data': result})
             
             else:
