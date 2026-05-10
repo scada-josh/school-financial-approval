@@ -334,8 +334,8 @@
         .connector-btn:hover { background: var(--surface-soft); }
         .connector-btn.primary { background: var(--primary); color: white; border-color: var(--primary); }
         .connector-btn.primary:hover { background: var(--primary-active); }
-        .connector-detail { display: none; margin-top: -1px; border: 1px solid var(--hairline); border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg); padding: var(--space-lg); background: var(--surface-soft); }
-        .connector-detail.active { display: block; }
+        .n8n-config-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out; opacity: 0; margin-top: 0; border: 1px solid var(--hairline); border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg); padding: 0 var(--space-lg); background: var(--surface-soft); }
+        .n8n-config-wrapper.expanded { max-height: 500px; opacity: 1; margin-top: -1px; padding: var(--space-lg); }
         
         /* Team Section */
         .team-section { margin: var(--space-section) 0; text-align: center; }
@@ -486,7 +486,7 @@
                                 <button class="connector-btn primary" id="n8n-toggle-btn" onclick="toggleN8N()">เปิดใช้งาน</button>
                             </div>
                         </div>
-                        <div id="n8n-config" class="connector-detail">
+                        <div id="n8n-config" class="n8n-config-wrapper">
                             <div class="settings-field">
                                 <label class="settings-label">Webhook URL</label>
                                 <p class="settings-description">URL ของ n8n webhook ที่จะรับข้อมูลจากระบบ</p>
@@ -1046,7 +1046,7 @@
         
         function toggleN8N() {
             const config = document.getElementById('n8n-config');
-            const isVisible = config.classList.contains('active');
+            const isVisible = config.classList.contains('expanded');
             updateN8NUi(!isVisible);
         }
 
@@ -1056,13 +1056,13 @@
             const btn = document.getElementById('n8n-toggle-btn');
 
             if (enabled) {
-                config.classList.add('active');
+                config.classList.add('expanded');
                 status.textContent = 'พร้อมใช้งาน';
                 status.style.color = 'var(--success)';
                 btn.textContent = 'ปิดใช้งาน';
                 btn.classList.remove('primary');
             } else {
-                config.classList.remove('active');
+                config.classList.remove('expanded');
                 status.textContent = 'ไม่ได้เชื่อมต่อ';
                 status.style.color = 'var(--muted)';
                 btn.textContent = 'เปิดใช้งาน';
@@ -1072,7 +1072,7 @@
 
         async function saveSettings() {
             try {
-                const n8nEnabled = document.getElementById('n8n-config').classList.contains('active');
+                const n8nEnabled = document.getElementById('n8n-config').classList.contains('expanded');
                 
                 const settingsData = {
                     General: {
