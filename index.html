@@ -307,11 +307,11 @@
         .settings-section.active { display: block; }
         .settings-group { margin-bottom: var(--space-xl); }
         .settings-group-title { font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: var(--space-md); }
-        .settings-field { margin-bottom: var(--space-md); }
-        .settings-label { display: block; font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
-        .settings-input { width: 100%; padding: 10px 14px; border: 1px solid var(--hairline); border-radius: var(--radius-md); font-size: 14px; font-family: 'Sarabun', 'Inter', sans-serif; background: var(--canvas); color: var(--body); transition: all 0.2s; }
+        .settings-field { margin-bottom: 12px; }
+        .settings-label { display: block; font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 0; line-height: 1.4; }
+        .settings-input { width: 100%; padding: 10px 14px; border: 1px solid var(--hairline); border-radius: var(--radius-md); font-size: 14px; font-family: 'Sarabun', 'Inter', sans-serif; background: var(--canvas); color: var(--body); transition: all 0.2s; margin-top: 4px; }
         .settings-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(204,120,92,0.1); }
-        .settings-description { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+        .settings-description { font-size: 11px; color: var(--muted); margin: 0; line-height: 1.3; }
         .settings-toggle { display: flex; align-items: center; justify-content: space-between; padding: var(--space-md) 0; border-bottom: 1px solid var(--hairline); }
         .settings-toggle:last-child { border-bottom: none; }
         .toggle-switch { position: relative; width: 44px; height: 24px; }
@@ -436,13 +436,13 @@
                         <div class="settings-group-title">ระบบ</div>
                         <div class="settings-field">
                             <label class="settings-label">ชื่อแอปพลิเคชัน</label>
-                            <input type="text" class="settings-input" id="setting-app-name" value="School Financial Approval Project">
                             <p class="settings-description">ชื่อที่แสดงบน navbar และ title</p>
+                            <input type="text" class="settings-input" id="setting-app-name" value="School Financial Approval Project">
                         </div>
                         <div class="settings-field">
                             <label class="settings-label">ภาษาเริ่มต้น</label>
-                            <input type="text" class="settings-input" id="setting-default-lang" value="th">
                             <p class="settings-description">รหัสภาษา (th, en)</p>
+                            <input type="text" class="settings-input" id="setting-default-lang" value="th">
                         </div>
                     </div>
                     <div class="settings-group">
@@ -488,17 +488,17 @@
                         <div id="n8n-config" class="connector-detail">
                             <div class="settings-field">
                                 <label class="settings-label">Webhook URL</label>
-                                <p class="settings-description" style="margin-top: 2px; margin-bottom: 6px;">URL ของ n8n webhook ที่จะรับข้อมูลจากระบบ</p>
+                                <p class="settings-description">URL ของ n8n webhook ที่จะรับข้อมูลจากระบบ</p>
                                 <input type="url" class="settings-input" id="n8n-webhook-url" placeholder="https://your-n8n-instance.com/webhook/...">
                             </div>
                             <div class="settings-field">
                                 <label class="settings-label">API Key</label>
-                                <p class="settings-description" style="margin-top: 2px; margin-bottom: 6px;">API Key สำหรับการยืนยันตัวตนกับ n8n</p>
+                                <p class="settings-description">API Key สำหรับการยืนยันตัวตนกับ n8n</p>
                                 <input type="password" class="settings-input" id="n8n-api-key" placeholder="n8n-api-key-...">
                             </div>
                             <div class="settings-field">
                                 <label class="settings-label">Workflow ID</label>
-                                <p class="settings-description" style="margin-top: 2px; margin-bottom: 6px;">รหัส Workflow ที่ต้องการเรียกใช้</p>
+                                <p class="settings-description">รหัส Workflow ที่ต้องการเรียกใช้</p>
                                 <input type="text" class="settings-input" id="n8n-workflow-id" placeholder="workflow-id">
                             </div>
                         </div>
