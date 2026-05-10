@@ -311,7 +311,7 @@
         .settings-label { display: block; font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
         .settings-input { width: 100%; padding: 10px 14px; border: 1px solid var(--hairline); border-radius: var(--radius-md); font-size: 14px; font-family: 'Sarabun', 'Inter', sans-serif; background: var(--canvas); color: var(--body); transition: all 0.2s; }
         .settings-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(204,120,92,0.1); }
-        .settings-description { font-size: 13px; color: var(--muted); margin-top: 4px; }
+        .settings-description { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
         .settings-toggle { display: flex; align-items: center; justify-content: space-between; padding: var(--space-md) 0; border-bottom: 1px solid var(--hairline); }
         .settings-toggle:last-child { border-bottom: none; }
         .toggle-switch { position: relative; width: 44px; height: 24px; }
@@ -488,18 +488,18 @@
                         <div id="n8n-config" class="connector-detail">
                             <div class="settings-field">
                                 <label class="settings-label">Webhook URL</label>
+                                <p class="settings-description" style="margin-top: 2px; margin-bottom: 6px;">URL ของ n8n webhook ที่จะรับข้อมูลจากระบบ</p>
                                 <input type="url" class="settings-input" id="n8n-webhook-url" placeholder="https://your-n8n-instance.com/webhook/...">
-                                <p class="settings-description">URL ของ n8n webhook ที่จะรับข้อมูลจากระบบ</p>
                             </div>
                             <div class="settings-field">
                                 <label class="settings-label">API Key</label>
+                                <p class="settings-description" style="margin-top: 2px; margin-bottom: 6px;">API Key สำหรับการยืนยันตัวตนกับ n8n</p>
                                 <input type="password" class="settings-input" id="n8n-api-key" placeholder="n8n-api-key-...">
-                                <p class="settings-description">API Key สำหรับการยืนยันตัวตนกับ n8n</p>
                             </div>
                             <div class="settings-field">
                                 <label class="settings-label">Workflow ID</label>
+                                <p class="settings-description" style="margin-top: 2px; margin-bottom: 6px;">รหัส Workflow ที่ต้องการเรียกใช้</p>
                                 <input type="text" class="settings-input" id="n8n-workflow-id" placeholder="workflow-id">
-                                <p class="settings-description">รหัส Workflow ที่ต้องการเรียกใช้</p>
                             </div>
                         </div>
                     </div>
