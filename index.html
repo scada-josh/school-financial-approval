@@ -333,6 +333,8 @@
         .connector-btn:hover { background: var(--surface-soft); }
         .connector-btn.primary { background: var(--primary); color: white; border-color: var(--primary); }
         .connector-btn.primary:hover { background: var(--primary-active); }
+        .n8n-config-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out; opacity: 0; margin-top: 0; }
+        .n8n-config-wrapper.expanded { max-height: 500px; opacity: 1; margin-top: var(--space-md); }
         
         /* Team Section */
         .team-section { margin: var(--space-section) 0; text-align: center; }
@@ -483,7 +485,7 @@
                                 <button class="connector-btn primary" id="n8n-toggle-btn" onclick="toggleN8N()">เปิดใช้งาน</button>
                             </div>
                         </div>
-                        <div id="n8n-config" style="display: none; margin-top: var(--space-md);">
+                        <div id="n8n-config" class="n8n-config-wrapper">
                             <div class="settings-field">
                                 <label class="settings-label">Webhook URL</label>
                                 <input type="url" class="settings-input" id="n8n-webhook-url" placeholder="https://your-n8n-instance.com/webhook/...">
@@ -1043,7 +1045,7 @@
         
         function toggleN8N() {
             const config = document.getElementById('n8n-config');
-            const isVisible = config.style.display === 'block';
+            const isVisible = config.classList.contains('expanded');
             updateN8NUi(!isVisible);
         }
         
@@ -1053,13 +1055,13 @@
             const btn = document.getElementById('n8n-toggle-btn');
             
             if (enabled) {
-                config.style.display = 'block';
+                config.classList.add('expanded');
                 status.textContent = 'พร้อมใช้งาน';
                 status.style.color = 'var(--success)';
                 btn.textContent = 'ปิดใช้งาน';
                 btn.classList.remove('primary');
             } else {
-                config.style.display = 'none';
+                config.classList.remove('expanded');
                 status.textContent = 'ไม่ได้เชื่อมต่อ';
                 status.style.color = 'var(--muted)';
                 btn.textContent = 'เปิดใช้งาน';
@@ -1069,7 +1071,7 @@
         
         async function saveSettings() {
             try {
-                const n8nEnabled = document.getElementById('n8n-config').style.display === 'block';
+                const n8nEnabled = document.getElementById('n8n-config').classList.contains('expanded');
                 
                 const settingsData = {
                     General: {
