@@ -49,9 +49,9 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 SPREADSHEET_ID = os.environ.get('SPREADSHEET_ID', '1Plh_0AodTomKLyP8zrBp9FOriHXVm_uGYIO4TVHSozg')
 SERVICE_ACCOUNT_EMAIL = os.environ.get('GOOGLE_CLIENT_EMAIL', 'opencode-gsheet@gen-lang-client-0476777034.iam.gserviceaccount.com')
 PRIVATE_KEY = os.environ.get('GOOGLE_PRIVATE_KEY')
-        if not PRIVATE_KEY:
-            # Service account JSON is preferred; this is a fallback
-            PRIVATE_KEY = ''
+if not PRIVATE_KEY:
+    # Service account JSON is preferred; this is a fallback
+    PRIVATE_KEY = ''
 
 # Validate that required credentials are available
 if not os.environ.get('GOOGLE_SERVICE_ACCOUNT_JSON') and not os.environ.get('GOOGLE_PRIVATE_KEY'):
