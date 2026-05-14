@@ -31,47 +31,32 @@ import urllib.parse
 import urllib.request
 import base64
 import os
+import mimetypes
 from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+# Base directory (project root)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+
 # Upload configuration
-UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'uploads', 'documents')
+UPLOAD_DIR = os.environ.get('UPLOAD_DIR', os.path.join(BASE_DIR, 'uploads', 'documents'))
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # Configuration
-SPREADSHEET_ID = '1Plh_0AodTomKLyP8zrBp9FOriHXVm_uGYIO4TVHSozg'
-SERVICE_ACCOUNT_EMAIL = 'opencode-gsheet@gen-lang-client-0476777034.iam.gserviceaccount.com'
-PRIVATE_KEY = """-----BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDTzchAmB0EWrI/
-L6g6VC5mXJOKecjEOLkFyVvmj8f+XP5M2uAHzb7Qu6UEwxEvCXBOnSfItfUH8nmV
-R+i/vk0ILkb4nyuu831P9G7vfV07DGMUec4/v6nU2mEM9UC5L+vfEwyqJeWzXt9U
-iIOCEjzmCoj9vE/PIzdMtX0dsPRAb39611oAONg4XGqug0hfaPT7h/V4jSRoOhnJ
-Pe6LeRcTR5SXTAh8tEqWTcJhAVCU4ALhrslbHx+7zuSvm4PBG3deD2coVKkb4Mdz
-K/c81mgK6detxjMAHbmC3LUCeqmiDbuyXLyzFNit0LBNCZdzzCb01BvpttQuALzH
-EIYg4E37AgMBAAECggEADHi6iOssEjyQ8F2LB1w7mzVqTqYbJ0q7wlZ3/dyLhzPM
-mZPtyyfXS40xC1W9Jkrk/QwN8qicNAqYFC02zEuVV5z5+tvMg7G8uD+JZLq6CacS
-EnuVpHVRt8HgIxYx6HWk6u7BOSegHe7BMcYUEE2onlcSd/ZlsKm/MNoi8uOfjken
-BNQ9DCswbGoko62VCyU2K5CcArJihgIayBA1gcEIBZOAHQnRpt9SRcFD11uemLqD
-+qnXIgbOuOplzldzpq0bKOZRCYbf3Ysd1Sp7iYsY46ZzlEzThYvdSGl0bCpT7KUO
-gOprKb5LpuQ7gV0I1H/mnly9JW398eAiV9ezmJ9MAQKBgQDyop+kNORj4+ZfVhDN
-R6wHyg0bTzJ33uwO/rTyVhNJvPK12kJaEOYZuz8cklw8ibuAbEIhGME88mhpru33
-VuDQ2xX37TzUACIEf76rN812wmeDr7uXQKQSl986lfpp3j7x7WV3d+n5umHqboNP
-R0I9YNAwhSypXVKZQ4oawAuf+wKBgQDfeGhpJXfXAF9rWVx5lcObFMUc8auGoYsF
-aBbpXvTGuru3GUCySgp7nTGzf3j3XLs/+cgVyvYmNHZrkCad2n1l1M3rsS5thsAQ
-N2clrKFLDk7Elcv/Kh8tgBHr40NpKXCC6/piE91chGPM/oe6gYk9voO4TQv3el5i
-q2Q53kiqAQKBgF+cZ64MTadzKdeNkadiw8559zo4thl4Var/AYyxEH6xHy8754OY
-PyQKni8DGaedWq6bel+SYqtClpR2oz0hFgwXGQwOhza/Kqh9MkREBAn1R1ckC5bp
-mP3erM9oRDotor4wnxg5v5Bxup3nmITH/rkzCjbkc5n1tVPBwo0R+kK7AoGAC/VS
-iQXjQtMXSBRRGYSFIiBbZ/AawKqWWOS4DSbyrEvDzcmBJ8lEhFbmGPfiTkJdFtBT
-/66Lu4GlMJ5XIq1VdoSLvGgP1vaWAogkceSqAO00E9r8PpxPbMzkqJ3RtqfsCGV+
-UY9EkjXXbVnVg4p5AJ/YRp2A3W5j7J3FUD9v3gECgYEA8AEzeuGoVHuRZ+HYRR1G
-QJTVxzqaN2uT/cDNONJ+TD9Zq7zqsuw9lqikd5YEImYYGBxnoQFwjl/TfcyktfwC
-4et9x5oKFofdddFex4mi/IWeaJmTd4H4A14iuxtOkKOOmBZlkTMRcunpOir7FzBL
-4eX0b6M7PahsY3PfB4DNaqU=
------END PRIVATE KEY-----"""
+SPREADSHEET_ID = os.environ.get('SPREADSHEET_ID', '1Plh_0AodTomKLyP8zrBp9FOriHXVm_uGYIO4TVHSozg')
+SERVICE_ACCOUNT_EMAIL = os.environ.get('GOOGLE_CLIENT_EMAIL', 'opencode-gsheet@gen-lang-client-0476777034.iam.gserviceaccount.com')
+PRIVATE_KEY = os.environ.get('GOOGLE_PRIVATE_KEY')
+        if not PRIVATE_KEY:
+            # Service account JSON is preferred; this is a fallback
+            PRIVATE_KEY = ''
+
+# Validate that required credentials are available
+if not os.environ.get('GOOGLE_SERVICE_ACCOUNT_JSON') and not os.environ.get('GOOGLE_PRIVATE_KEY'):
+    print("⚠️  Warning: No Google credentials found in environment variables.")
+    print("   Please set GOOGLE_SERVICE_ACCOUNT_JSON or GOOGLE_PRIVATE_KEY before running.")
 
 class GoogleSheetsClient:
     """Client for Google Sheets operations"""
@@ -83,17 +68,28 @@ class GoogleSheetsClient:
         self._settings_cache = None
     
     def _get_service(self):
-        credentials = service_account.Credentials.from_service_account_info(
-            {
+        # Try loading from GOOGLE_SERVICE_ACCOUNT_JSON env var first
+        service_account_json = os.environ.get('GOOGLE_SERVICE_ACCOUNT_JSON')
+        if service_account_json:
+            try:
+                account_info = json.loads(service_account_json)
+            except json.JSONDecodeError:
+                raise ValueError("Invalid GOOGLE_SERVICE_ACCOUNT_JSON environment variable")
+        else:
+            # Fallback to individual env vars or hardcoded defaults
+            account_info = {
                 "type": "service_account",
-                "project_id": "gen-lang-client-0476777034",
-                "private_key_id": "key-id",
+                "project_id": os.environ.get('GOOGLE_PROJECT_ID', 'gen-lang-client-0476777034'),
+                "private_key_id": os.environ.get('GOOGLE_PRIVATE_KEY_ID', 'key-id'),
                 "private_key": PRIVATE_KEY,
                 "client_email": SERVICE_ACCOUNT_EMAIL,
-                "client_id": "client-id",
+                "client_id": os.environ.get('GOOGLE_CLIENT_ID', 'client-id'),
                 "auth_uri": "https://accounts.google.com/o/oauth2/auth",
                 "token_uri": "https://oauth2.googleapis.com/token",
-            },
+            }
+        
+        credentials = service_account.Credentials.from_service_account_info(
+            account_info,
             scopes=['https://www.googleapis.com/auth/spreadsheets']
         )
         return build('sheets', 'v4', credentials=credentials)
@@ -679,7 +675,13 @@ class GoogleSheetsClient:
                     ['Connectors', 'N8N_WEBHOOK_URL', ''],
                     ['Connectors', 'N8N_API_KEY', ''],
                     ['Connectors', 'N8N_WORKFLOW_ID', ''],
-                    ['Connectors', 'N8N_DESCRIPTION', 'n8n workflow automation connector']
+                    ['Connectors', 'N8N_DESCRIPTION', 'n8n workflow automation connector'],
+                    ['Profiles', 'PROFILE_LIST', '["Default"]'],
+                    ['Profiles', 'ACTIVE_PROFILE', 'Default'],
+                    ['Profile_Default', 'N8N_ENABLED', 'false'],
+                    ['Profile_Default', 'N8N_WEBHOOK_URL', ''],
+                    ['Profile_Default', 'N8N_API_KEY', ''],
+                    ['Profile_Default', 'N8N_WORKFLOW_ID', '']
                 ]
                 
                 self.service.spreadsheets().values().append(
@@ -762,6 +764,291 @@ class GoogleSheetsClient:
         self.clear_settings_cache()
         return {'message': 'Settings updated successfully'}
 
+    # ============ Profile Methods ============
+
+    def get_profiles(self):
+        """Get all profiles and active profile"""
+        settings = self.get_settings()
+        profiles = {
+            'profiles': [],
+            'active_profile': 'Default'
+        }
+
+        if 'Profiles' in settings:
+            # Get profile list
+            profile_list_str = settings['Profiles'].get('PROFILE_LIST', '[]')
+            try:
+                profiles['profiles'] = json.loads(profile_list_str)
+            except:
+                profiles['profiles'] = []
+
+            # Get active profile
+            profiles['active_profile'] = settings['Profiles'].get('ACTIVE_PROFILE', 'Default')
+
+        # Ensure at least Default profile exists
+        if not profiles['profiles']:
+            profiles['profiles'] = ['Default']
+            profiles['active_profile'] = 'Default'
+
+        return profiles
+
+    def get_profile(self, name):
+        """Get profile config by name"""
+        settings = self.get_settings()
+        profile_key = f'Profile_{name}'
+
+        if profile_key in settings:
+            return settings[profile_key]
+
+        # Return empty config if profile not found
+        return {
+            'N8N_ENABLED': 'false',
+            'N8N_WEBHOOK_URL': '',
+            'N8N_API_KEY': '',
+            'N8N_WORKFLOW_ID': ''
+        }
+
+    def save_profile(self, name, config):
+        """Save or update a profile"""
+        self.clear_settings_cache()
+        
+        settings = self.get_settings()
+        profiles_data = self.get_profiles()
+        profiles = profiles_data['profiles']
+
+        # Add profile to list if new
+        if name not in profiles:
+            profiles.append(name)
+
+        # Update settings data
+        if 'Profiles' not in settings:
+            settings['Profiles'] = {}
+
+        settings['Profiles']['PROFILE_LIST'] = json.dumps(profiles)
+
+        # Save profile config
+        profile_key = f'Profile_{name}'
+        if profile_key not in settings:
+            settings[profile_key] = {}
+
+        for key, value in config.items():
+            settings[profile_key][key] = value
+
+        # Update all settings in sheet
+        self._update_settings_from_dict(settings)
+        self.clear_settings_cache()
+
+        return {'name': name, 'config': config}
+
+    def delete_profile(self, name):
+        """Delete a profile"""
+        if name == 'Default':
+            raise ValueError("Cannot delete Default profile")
+
+        # Clear cache to get fresh data
+        self.clear_settings_cache()
+        
+        profiles_data = self.get_profiles()
+        profiles = profiles_data['profiles']
+
+        if name not in profiles:
+            raise ValueError(f"Profile '{name}' not found")
+
+        profiles.remove(name)
+
+        settings = self.get_settings()
+        settings['Profiles']['PROFILE_LIST'] = json.dumps(profiles)
+
+        # Remove profile config
+        profile_key = f'Profile_{name}'
+        if profile_key in settings:
+            del settings[profile_key]
+
+        # Update active profile if deleted profile was active
+        if profiles_data['active_profile'] == name:
+            settings['Profiles']['ACTIVE_PROFILE'] = 'Default'
+
+        self._update_settings_from_dict(settings)
+        self.clear_settings_cache()
+
+        return {'message': f"Profile '{name}' deleted"}
+
+    def set_active_profile(self, name):
+        """Set active profile"""
+        profiles_data = self.get_profiles()
+
+        if name not in profiles_data['profiles']:
+            raise ValueError(f"Profile '{name}' not found")
+
+        settings = self.get_settings()
+        if 'Profiles' not in settings:
+            settings['Profiles'] = {}
+
+        settings['Profiles']['ACTIVE_PROFILE'] = name
+
+        self._update_settings_from_dict(settings)
+        self.clear_settings_cache()
+
+        return {'active_profile': name}
+
+    def _update_settings_from_dict(self, settings_dict):
+        """Update settings sheet from dictionary - syncs exactly what's in the dict"""
+        result = self.service.spreadsheets().values().get(
+            spreadsheetId=SPREADSHEET_ID,
+            range='Settings!A1:C200'
+        ).execute()
+
+        data = result.get('values', [])
+        if not data:
+            raise ValueError("Settings sheet is empty")
+
+        # Build a map of existing rows
+        existing_rows = {}
+        for i, row in enumerate(data[1:], start=2):
+            if len(row) >= 2:
+                key = f"{row[0]}:{row[1]}"
+                existing_rows[key] = i
+
+        # Build set of keys that should exist
+        desired_keys = set()
+        for category, items in settings_dict.items():
+            for key in items.keys():
+                desired_keys.add(f"{category}:{key}")
+
+        # Find rows to delete (exist in sheet but not in desired dict)
+        rows_to_delete = []
+        for row_key, row_num in existing_rows.items():
+            if row_key not in desired_keys:
+                rows_to_delete.append(row_num)
+
+        # Delete rows in reverse order to maintain indices
+        if rows_to_delete:
+            spreadsheet = self.service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID).execute()
+            sheet_id = None
+            for sheet in spreadsheet['sheets']:
+                if sheet['properties']['title'] == 'Settings':
+                    sheet_id = sheet['properties']['sheetId']
+                    break
+            
+            if sheet_id is not None:
+                # Sort descending and merge consecutive rows
+                rows_to_delete.sort(reverse=True)
+                delete_requests = []
+                for row_num in rows_to_delete:
+                    delete_requests.append({
+                        'deleteDimension': {
+                            'range': {
+                                'sheetId': sheet_id,
+                                'dimension': 'ROWS',
+                                'startIndex': row_num - 1,
+                                'endIndex': row_num
+                            }
+                        }
+                    })
+                
+                if delete_requests:
+                    self.service.spreadsheets().batchUpdate(
+                        spreadsheetId=SPREADSHEET_ID,
+                        body={'requests': delete_requests}
+                    ).execute()
+
+        # Re-fetch data after deletion
+        result = self.service.spreadsheets().values().get(
+            spreadsheetId=SPREADSHEET_ID,
+            range='Settings!A1:C200'
+        ).execute()
+        data = result.get('values', [])
+
+        # Rebuild existing_rows map
+        existing_rows = {}
+        for i, row in enumerate(data[1:], start=2):
+            if len(row) >= 2:
+                key = f"{row[0]}:{row[1]}"
+                existing_rows[key] = i
+
+        # Prepare updates and appends
+        updates = []
+        appends = []
+
+        for category, items in settings_dict.items():
+            for key, value in items.items():
+                row_key = f"{category}:{key}"
+                if row_key in existing_rows:
+                    # Update existing row
+                    row_num = existing_rows[row_key]
+                    updates.append({
+                        'range': f'Settings!C{row_num}',
+                        'values': [[str(value)]]
+                    })
+                else:
+                    # Append new row
+                    appends.append([category, key, str(value)])
+
+        # Execute updates
+        if updates:
+            self.service.spreadsheets().values().batchUpdate(
+                spreadsheetId=SPREADSHEET_ID,
+                body={'valueInputOption': 'RAW', 'data': updates}
+            ).execute()
+
+        # Execute appends
+        if appends:
+            self.service.spreadsheets().values().append(
+                spreadsheetId=SPREADSHEET_ID,
+                range='Settings!A1',
+                valueInputOption='RAW',
+                insertDataOption='INSERT_ROWS',
+                body={'values': appends}
+            ).execute()
+
+    def rename_profile(self, old_name, new_name):
+        """Rename a profile and its config"""
+        if old_name == 'Default':
+            raise ValueError("Cannot rename Default profile")
+        
+        if old_name == new_name:
+            return {'message': f"Profile name unchanged"}
+        
+        self.clear_settings_cache()
+        
+        profiles_data = self.get_profiles()
+        profiles = profiles_data['profiles']
+        
+        if old_name not in profiles:
+            raise ValueError(f"Profile '{old_name}' not found")
+        
+        if new_name in profiles:
+            raise ValueError(f"Profile '{new_name}' already exists")
+        
+        # Get old config
+        old_config = self.get_profile(old_name)
+        
+        # Update profile list
+        index = profiles.index(old_name)
+        profiles[index] = new_name
+        
+        settings = self.get_settings()
+        settings['Profiles']['PROFILE_LIST'] = json.dumps(profiles)
+        
+        # Update active profile if needed
+        if profiles_data['active_profile'] == old_name:
+            settings['Profiles']['ACTIVE_PROFILE'] = new_name
+        
+        # Remove old profile config from dict (will be deleted from sheet)
+        old_key = f'Profile_{old_name}'
+        if old_key in settings:
+            del settings[old_key]
+        
+        # Add new profile config
+        new_key = f'Profile_{new_name}'
+        settings[new_key] = old_config
+        
+        # Update sheet
+        self._update_settings_from_dict(settings)
+        self.clear_settings_cache()
+        
+        return {'old_name': old_name, 'new_name': new_name}
+
 
 # Initialize client
 sheets_client = GoogleSheetsClient()
@@ -793,10 +1080,52 @@ class APIHandler(BaseHTTPRequestHandler):
             return json.loads(body.decode('utf-8'))
         return {}
     
+    def _serve_static(self, path):
+        """Serve static files from the project root"""
+        # Security: prevent path traversal
+        if '..' in path or '~' in path:
+            self._send_json({'success': False, 'error': 'Not found'}, 404)
+            return
+        
+        if path == '/' or path == '':
+            filepath = os.path.join(BASE_DIR, 'index.html')
+        else:
+            clean_path = path.lstrip('/')
+            filepath = os.path.join(BASE_DIR, clean_path)
+        
+        # Ensure path is within BASE_DIR
+        real_filepath = os.path.realpath(filepath)
+        real_base = os.path.realpath(BASE_DIR)
+        if not real_filepath.startswith(real_base):
+            self._send_json({'success': False, 'error': 'Not found'}, 404)
+            return
+        
+        if not os.path.exists(filepath) or not os.path.isfile(filepath):
+            self._send_json({'success': False, 'error': 'Not found'}, 404)
+            return
+        
+        content_type, _ = mimetypes.guess_type(filepath)
+        if content_type is None:
+            content_type = 'application/octet-stream'
+        
+        self.send_response(200)
+        self.send_header('Content-Type', content_type)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Cache-Control', 'public, max-age=3600')
+        self.end_headers()
+        
+        with open(filepath, 'rb') as f:
+            self.wfile.write(f.read())
+
     def do_GET(self):
         parsed_path = urllib.parse.urlparse(self.path)
         path = parsed_path.path
         query = urllib.parse.parse_qs(parsed_path.query)
+        
+        # Serve static files for non-API routes
+        if not path.startswith('/api/'):
+            self._serve_static(path)
+            return
         
         try:
             # TOR Config endpoints
@@ -826,7 +1155,24 @@ class APIHandler(BaseHTTPRequestHandler):
             elif path == '/api/settings':
                 settings = sheets_client.get_settings()
                 self._send_json({'success': True, 'data': settings})
-            
+
+            # Profile endpoints
+            elif path == '/api/profiles':
+                profiles = sheets_client.get_profiles()
+                self._send_json({'success': True, 'data': profiles})
+
+            elif path.startswith('/api/profiles/'):
+                path_parts = path.split('/')
+                if len(path_parts) >= 4:
+                    profile_name = urllib.parse.unquote(path_parts[3])
+                    if profile_name:
+                        profile_config = sheets_client.get_profile(profile_name)
+                        self._send_json({'success': True, 'data': {'name': profile_name, 'config': profile_config}})
+                    else:
+                        self._send_json({'success': False, 'error': 'Profile name is required'}, 400)
+                else:
+                    self._send_json({'success': False, 'error': 'Invalid path'}, 400)
+
             else:
                 self._send_json({'success': False, 'error': 'Not found'}, 404)
         
@@ -898,7 +1244,7 @@ class APIHandler(BaseHTTPRequestHandler):
                 with open(file_path, 'wb') as f:
                     f.write(file_bytes)
                 
-                # Check n8n settings
+                # Check n8n settings from active profile
                 n8n_enabled = False
                 n8n_webhook_url = ''
                 n8n_api_key = ''
@@ -907,14 +1253,16 @@ class APIHandler(BaseHTTPRequestHandler):
                 webhook_status = 'ไม่ได้ส่ง'
                 
                 try:
-                    settings = sheets_client.get_settings()
-                    if 'Connectors' in settings:
-                        n8n_enabled = settings['Connectors'].get('N8N_ENABLED', 'false').lower() == 'true'
-                        n8n_webhook_url = settings['Connectors'].get('N8N_WEBHOOK_URL', '')
-                        n8n_api_key = settings['Connectors'].get('N8N_API_KEY', '')
-                        n8n_workflow_id = settings['Connectors'].get('N8N_WORKFLOW_ID', '')
+                    profiles_data = sheets_client.get_profiles()
+                    active_profile = profiles_data.get('active_profile', 'Default')
+                    profile_config = sheets_client.get_profile(active_profile)
+                    
+                    n8n_enabled = profile_config.get('N8N_ENABLED', 'false').lower() == 'true'
+                    n8n_webhook_url = profile_config.get('N8N_WEBHOOK_URL', '')
+                    n8n_api_key = profile_config.get('N8N_API_KEY', '')
+                    n8n_workflow_id = profile_config.get('N8N_WORKFLOW_ID', '')
                 except Exception as e:
-                    print(f"Warning: Could not load settings: {e}")
+                    print(f"Warning: Could not load profile settings: {e}")
                 
                 # Send to n8n if enabled
                 if n8n_enabled and n8n_webhook_url:
@@ -1031,19 +1379,39 @@ class APIHandler(BaseHTTPRequestHandler):
                 body = self._read_body()
                 result = sheets_client.add_tracking_project(body)
                 self._send_json({'success': True, 'data': result}, 201)
-            
+
+            # Profile endpoints
+            elif path == '/api/profiles':
+                body = self._read_body()
+                name = body.get('name')
+                config = body.get('config', {})
+                if not name:
+                    raise ValueError("Profile name is required")
+                result = sheets_client.save_profile(name, config)
+                self._send_json({'success': True, 'data': result}, 201)
+
+            # Profile rename endpoint
+            elif path == '/api/profiles/rename':
+                body = self._read_body()
+                old_name = body.get('old_name')
+                new_name = body.get('new_name')
+                if not old_name or not new_name:
+                    raise ValueError("old_name and new_name are required")
+                result = sheets_client.rename_profile(old_name, new_name)
+                self._send_json({'success': True, 'data': result})
+
             else:
                 self._send_json({'success': False, 'error': 'Not found'}, 404)
-        
+
         except ValueError as e:
             self._send_json({'success': False, 'error': str(e)}, 400)
         except Exception as e:
             self._send_json({'success': False, 'error': str(e)}, 500)
-    
+
     def do_PUT(self):
         parsed_path = urllib.parse.urlparse(self.path)
         path = parsed_path.path
-        
+
         try:
             # TOR Config endpoints
             if path.startswith('/api/tor/projects/'):
@@ -1052,45 +1420,64 @@ class APIHandler(BaseHTTPRequestHandler):
                 sections = body.get('sections', {})
                 result = sheets_client.update_tor_project(name, sections)
                 self._send_json({'success': True, 'data': result})
-            
+
             # Project Tracking endpoints
             elif path.startswith('/api/tracking/projects/'):
                 project_id = urllib.parse.unquote(path[len('/api/tracking/projects/'):])
                 body = self._read_body()
                 result = sheets_client.update_tracking_project(project_id, body)
                 self._send_json({'success': True, 'data': result})
-            
+
             # Settings endpoints
             elif path == '/api/settings':
                 body = self._read_body()
                 result = sheets_client.update_settings(body)
                 self._send_json({'success': True, 'data': result})
-            
+
+            # Profile endpoints
+            elif path.startswith('/api/profiles/active/'):
+                profile_name = urllib.parse.unquote(path[len('/api/profiles/active/'):])
+                result = sheets_client.set_active_profile(profile_name)
+                self._send_json({'success': True, 'data': result})
+
+            elif path.startswith('/api/profiles/'):
+                profile_name = urllib.parse.unquote(path[len('/api/profiles/'):])
+                body = self._read_body()
+                config = body.get('config', {})
+                result = sheets_client.save_profile(profile_name, config)
+                self._send_json({'success': True, 'data': result})
+
             else:
                 self._send_json({'success': False, 'error': 'Not found'}, 404)
-        
+
         except ValueError as e:
             self._send_json({'success': False, 'error': str(e)}, 400)
         except Exception as e:
             self._send_json({'success': False, 'error': str(e)}, 500)
-    
+
     def do_DELETE(self):
         parsed_path = urllib.parse.urlparse(self.path)
         path = parsed_path.path
-        
+
         try:
             # TOR Config endpoints
             if path.startswith('/api/tor/projects/'):
                 name = urllib.parse.unquote(path[len('/api/tor/projects/'):])
                 result = sheets_client.delete_tor_project(name)
                 self._send_json({'success': True, 'data': result})
-            
+
             # Project Tracking endpoints
             elif path.startswith('/api/tracking/projects/'):
                 project_id = urllib.parse.unquote(path[len('/api/tracking/projects/'):])
                 result = sheets_client.delete_tracking_project(project_id)
                 self._send_json({'success': True, 'data': result})
-            
+
+            # Profile endpoints
+            elif path.startswith('/api/profiles/'):
+                profile_name = urllib.parse.unquote(path[len('/api/profiles/'):])
+                result = sheets_client.delete_profile(profile_name)
+                self._send_json({'success': True, 'data': result})
+
             else:
                 self._send_json({'success': False, 'error': 'Not found'}, 404)
         
@@ -1104,10 +1491,12 @@ class APIHandler(BaseHTTPRequestHandler):
         pass
 
 
-def run_server(port=8765):
+def run_server(port=None):
     """Run the API server"""
-    server = HTTPServer(('localhost', port), APIHandler)
-    print(f"🚀 School Financial Approval API Server running at http://localhost:{port}")
+    port = int(os.environ.get('PORT', port or 8765))
+    host = os.environ.get('HOST', '0.0.0.0')
+    server = HTTPServer((host, port), APIHandler)
+    print(f"🚀 School Financial Approval API Server running at http://{host}:{port}")
     print(f"📋 Endpoints:")
     print(f"")
     print(f"  TOR Config:")
@@ -1125,6 +1514,14 @@ def run_server(port=8765):
     print(f"   PUT    /api/tracking/projects/{{id}}         - Update project")
     print(f"   DELETE /api/tracking/projects/{{id}}         - Delete project")
     print(f"   GET    /api/tracking/years                 - List budget years")
+    print(f"")
+    print(f"  Profiles:")
+    print(f"   GET    /api/profiles                        - List all profiles")
+    print(f"   GET    /api/profiles/{{name}}                  - Get profile config")
+    print(f"   POST   /api/profiles                        - Create profile")
+    print(f"   PUT    /api/profiles/{{name}}                  - Update profile")
+    print(f"   PUT    /api/profiles/active/{{name}}           - Set active profile")
+    print(f"   DELETE /api/profiles/{{name}}                  - Delete profile")
     print(f"")
     print(f"📁 Upload directory: {UPLOAD_DIR}")
     print(f"")

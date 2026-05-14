@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: school-financial-approval
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python src/backend/scripts/tor-api.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: SPREADSHEET_ID
+        sync: false
+      - key: GOOGLE_SERVICE_ACCOUNT_JSON
+        sync: false
+    # Uncomment below if you need persistent disk for uploads
+    # disk:
+    #   name: uploads
+    #   mountPath: /opt/render/project/src/uploads
+    #   sizeGB: 1
