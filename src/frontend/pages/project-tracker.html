@@ -508,6 +508,111 @@
             margin-bottom: var(--space-sm);
         }
 
+        /* Mobile Navigation */
+        .nav-hamburger {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: var(--radius-md);
+            background: var(--canvas);
+            border: 1px solid var(--hairline);
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-hamburger:hover {
+            background: var(--surface-soft);
+        }
+
+        .mobile-nav-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(24, 23, 21, 0.6);
+            z-index: 1500;
+            justify-content: flex-end;
+        }
+
+        .mobile-nav-overlay.active {
+            display: flex;
+        }
+
+        .mobile-nav {
+            background: var(--canvas);
+            width: 280px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .mobile-nav-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--hairline);
+        }
+
+        .mobile-nav-close {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border-radius: var(--radius-md);
+            background: var(--canvas);
+            border: 1px solid var(--hairline);
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mobile-nav-close:hover {
+            background: var(--surface-soft);
+            color: var(--ink);
+        }
+
+        .mobile-nav-menu {
+            display: flex;
+            flex-direction: column;
+            padding: var(--space-md);
+            gap: var(--space-xs);
+        }
+
+        .mobile-nav-item {
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--muted);
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-family: 'Inter', sans-serif;
+            text-align: left;
+        }
+
+        .mobile-nav-item:hover {
+            color: var(--ink);
+            background: var(--surface-soft);
+        }
+
+        .mobile-nav-item.active {
+            color: var(--ink);
+            background: var(--surface-card);
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .hero-title { font-size: 36px; }
@@ -519,10 +624,57 @@
             .main { padding: 80px var(--space-md) var(--space-xl); }
             .nav { padding: 0 var(--space-md); }
             .nav-menu { display: none; }
-            .hero-title { font-size: 32px; }
-            .stats-bar { flex-wrap: wrap; gap: var(--space-lg); }
+            .nav-hamburger { display: flex; }
+            .hero-title { font-size: 28px; }
+            .hero-subtitle { font-size: 16px; }
+            .stats-bar {
+                flex-wrap: wrap;
+                gap: var(--space-md);
+                padding: var(--space-md) 0;
+                margin-bottom: var(--space-lg);
+            }
+            .stat-value { font-size: 28px; }
+            .stat-label { font-size: 11px; letter-spacing: 1px; }
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: var(--space-sm);
+                margin-bottom: var(--space-lg);
+            }
+            .filter-select { width: 100%; min-width: auto; }
             .form-row { grid-template-columns: 1fr; }
-            .filter-bar { flex-direction: column; align-items: stretch; }
+            .project-table-container { overflow-x: auto; }
+            .project-table { min-width: 800px; }
+            .modal {
+                padding: var(--space-lg);
+                margin: var(--space-md);
+                max-height: 90vh;
+            }
+            .modal-title { font-size: 22px; }
+            .modal-subtitle { font-size: 14px; }
+            .form-actions {
+                flex-direction: column-reverse;
+                gap: var(--space-sm);
+            }
+            .form-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            .toast {
+                left: var(--space-md);
+                right: var(--space-md);
+                bottom: var(--space-md);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title { font-size: 24px; }
+            .hero-subtitle { font-size: 14px; }
+            .stats-bar { gap: var(--space-sm); }
+            .stat-value { font-size: 24px; }
+            .stat-label { font-size: 10px; }
+            .btn { padding: 8px 16px; height: 36px; font-size: 13px; }
+            .mobile-nav { width: 100%; }
         }
 
         /* Approval Flow */
@@ -563,7 +715,37 @@
             <button class="nav-item" onclick="window.location.href='tor-manager-claude.html'">TOR Manager</button>
             <button class="nav-item active">ติดตามสถานะ</button>
         </div>
+        <button class="nav-hamburger" onclick="toggleMobileNav()" aria-label="เมนู">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
     </nav>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav-overlay" id="mobile-nav-overlay" onclick="closeMobileNav()">
+        <div class="mobile-nav" onclick="event.stopPropagation()">
+            <div class="mobile-nav-header">
+                <div class="nav-brand">
+                    <div class="nav-logo">SF</div>
+                    <div class="nav-title">School Financial Approval</div>
+                </div>
+                <button class="mobile-nav-close" onclick="closeMobileNav()" aria-label="ปิด">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="mobile-nav-menu">
+                <button class="mobile-nav-item" onclick="window.location.href='school-financial-approval.html'">หน้าหลัก</button>
+                <button class="mobile-nav-item" onclick="window.location.href='tor-manager-claude.html'">TOR Manager</button>
+                <button class="mobile-nav-item active">ติดตามสถานะ</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <main class="main">
@@ -736,6 +918,19 @@
         let projects = [];
         let projectTypes = [];
         let editingId = null;
+
+        // Mobile Navigation
+        function toggleMobileNav() {
+            const overlay = document.getElementById('mobile-nav-overlay');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = overlay.classList.contains('active') ? 'hidden' : '';
+        }
+
+        function closeMobileNav() {
+            const overlay = document.getElementById('mobile-nav-overlay');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {

@@ -138,6 +138,110 @@
             gap: var(--space-md);
         }
         
+        .nav-menu {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-hamburger {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: none;
+            border: none;
+            color: var(--ink);
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            padding: 0;
+        }
+        
+        .nav-hamburger:hover {
+            background: var(--surface-soft);
+        }
+        
+        .mobile-nav-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(24, 23, 21, 0.5);
+            z-index: 2000;
+            align-items: flex-start;
+            justify-content: flex-end;
+        }
+        
+        .mobile-nav-overlay.active {
+            display: flex;
+        }
+        
+        .mobile-nav {
+            background: var(--canvas);
+            width: 280px;
+            height: 100vh;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .mobile-nav-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-lg) var(--space-xl);
+            border-bottom: 1px solid var(--hairline);
+        }
+        
+        .mobile-nav-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--muted);
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            padding: 0;
+        }
+        
+        .mobile-nav-close:hover {
+            background: var(--surface-soft);
+        }
+        
+        .mobile-nav-menu {
+            display: flex;
+            flex-direction: column;
+            padding: var(--space-md);
+            gap: var(--space-xs);
+        }
+        
+        .mobile-nav-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--body);
+            background: none;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        
+        .mobile-nav-item:hover {
+            background: var(--surface-soft);
+        }
+        
         /* Buttons */
         .btn {
             display: inline-flex;
@@ -633,6 +737,14 @@
                 padding: 0 var(--space-md);
             }
             
+            .nav-menu {
+                display: none;
+            }
+            
+            .nav-hamburger {
+                display: flex;
+            }
+            
             .hero-title {
                 font-size: 36px;
             }
@@ -643,7 +755,17 @@
             
             .stats-bar {
                 flex-wrap: wrap;
-                gap: var(--space-lg);
+                gap: var(--space-md);
+                padding: var(--space-md) 0;
+            }
+            
+            .stat-value {
+                font-size: 28px;
+            }
+            
+            .stat-label {
+                font-size: 11px;
+                letter-spacing: 1px;
             }
             
             .project-item {
@@ -655,6 +777,110 @@
             .project-actions {
                 width: 100%;
                 justify-content: flex-end;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .table-container table {
+                min-width: 800px;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+                gap: var(--space-sm);
+            }
+            
+            .modal {
+                padding: var(--space-xl);
+                margin: var(--space-md);
+                max-height: 90vh;
+            }
+            
+            .modal-title {
+                font-size: 24px;
+            }
+            
+            .hero-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .callout-coral {
+                padding: var(--space-xl);
+            }
+            
+            .two-column {
+                gap: var(--space-lg);
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-sm);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 28px;
+            }
+            
+            .section-title {
+                font-size: 24px;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+                gap: var(--space-sm);
+            }
+            
+            .stat-value {
+                font-size: 24px;
+            }
+            
+            .project-item {
+                padding: var(--space-md);
+            }
+            
+            .project-icon {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .section-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: var(--space-lg);
+            }
+            
+            .modal {
+                padding: var(--space-lg);
+                border-radius: var(--radius-lg);
+                margin: var(--space-sm);
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .form-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .toast {
+                left: var(--space-md);
+                right: var(--space-md);
+                bottom: var(--space-md);
+            }
+            
+            .mobile-nav {
+                width: 100%;
             }
         }
         
@@ -692,15 +918,38 @@
             <div class="nav-logo">⚡</div>
             <div class="nav-title">TOR Manager</div>
         </div>
-        <div class="nav-actions">
-            <button class="btn btn-secondary btn-sm" onclick="refreshData()">
-                ↻ รีเฟรช
-            </button>
-            <button class="btn btn-primary btn-sm" onclick="showAddModal()">
-                + เพิ่มประเภท
-            </button>
+        <div class="nav-menu">
+            <div class="nav-actions">
+                <button class="btn btn-secondary btn-sm" onclick="refreshData()">
+                    ↻ รีเฟรช
+                </button>
+                <button class="btn btn-primary btn-sm" onclick="showAddModal()">
+                    + เพิ่มประเภท
+                </button>
+            </div>
         </div>
+        <button class="nav-hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
     </nav>
+    
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav-overlay" id="mobile-nav-overlay" onclick="closeMobileNav()">
+        <div class="mobile-nav" onclick="event.stopPropagation()">
+            <div class="mobile-nav-header">
+                <span class="nav-title">TOR Manager</span>
+                <button class="mobile-nav-close" onclick="closeMobileNav()" aria-label="Close">✕</button>
+            </div>
+            <div class="mobile-nav-menu">
+                <button class="mobile-nav-item" onclick="refreshData(); closeMobileNav();">
+                    ↻ รีเฟรช
+                </button>
+                <button class="mobile-nav-item" onclick="showAddModal(); closeMobileNav();">
+                    + เพิ่มประเภท
+                </button>
+            </div>
+        </div>
+    </div>
     
     <!-- Main Content -->
     <main class="main">
@@ -834,6 +1083,15 @@
         let sections = [];
         let selectedProject = null;
         let editingProject = null;
+        
+        // Mobile Navigation
+        function toggleMobileNav() {
+            document.getElementById('mobile-nav-overlay').classList.toggle('active');
+        }
+        
+        function closeMobileNav() {
+            document.getElementById('mobile-nav-overlay').classList.remove('active');
+        }
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
