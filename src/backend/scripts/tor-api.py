@@ -59,7 +59,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 SPREADSHEET_ID = os.environ.get('SPREADSHEET_ID', '1Plh_0AodTomKLyP8zrBp9FOriHXVm_uGYIO4TVHSozg')
 SERVICE_ACCOUNT_EMAIL = os.environ.get('GOOGLE_CLIENT_EMAIL', 'opencode-gsheet@gen-lang-client-0476777034.iam.gserviceaccount.com')
 PRIVATE_KEY = os.environ.get('GOOGLE_PRIVATE_KEY')
-GOOGLE_DRIVE_FOLDER_ID = os.environ.get('GOOGLE_DRIVE_FOLDER_ID', '16kDckxG7XTbbOwv4LMe5XpWCYiXYh6Zv')
+GOOGLE_DRIVE_FOLDER_ID = os.environ.get('GOOGLE_DRIVE_FOLDER_ID', '1cHwFk1bG8l__SEZC8DG853thOA5q8tLO')
 
 if not PRIVATE_KEY:
     # Service account JSON is preferred; this is a fallback
