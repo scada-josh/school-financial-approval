@@ -73,6 +73,19 @@ class CallbackHandler(http.server.BaseHTTPRequestHandler):
         pass
 
 
+def find_free_port(start=8080, end=8100):
+    """Find a free port in the given range"""
+    for port in range(start, end):
+        try:
+            import socket
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.bind(("localhost", port))
+                return port
+        except OSError:
+            continue
+    raise RuntimeError("No free port found")
+
+
 def get_refresh_token(client_secret_path):
     with open(client_secret_path, 'r') as f:
         client_config = json.load(f)
@@ -88,8 +101,12 @@ def get_refresh_token(client_secret_path):
     client_id = client['client_id']
     client_secret = client['client_secret']
 
+    # Find free port and start local callback server
+    port = find_free_port()
+    redirect_uri = f'http://localhost:{port}/oauth2callback'
+
     # Start local callback server
-    with socketserver.TCPServer(("localhost", 8080), CallbackHandler) as httpd:
+    with socketserver.TCPServer(("localhost", port), CallbackHandler) as httpd:
         server_thread = threading.Thread(target=httpd.serve_forever)
         server_thread.daemon = True
         server_thread.start()
@@ -97,7 +114,7 @@ def get_refresh_token(client_secret_path):
         try:
             auth_params = {
                 'client_id': client_id,
-                'redirect_uri': REDIRECT_URI,
+                'redirect_uri': redirect_uri,
                 'response_type': 'code',
                 'scope': ' '.join(SCOPES),
                 'access_type': 'offline',
@@ -107,13 +124,13 @@ def get_refresh_token(client_secret_path):
 
             print("")
             print("=" * 60)
-            print("🔗 Opening browser for Google authorization...")
+            print(f"Opening browser for Google authorization on port {port}...")
             print("=" * 60)
             print("")
 
             webbrowser.open(auth_url)
 
-            print("⏳ Waiting for authorization...")
+            print("Waiting for authorization...")
             while authorization_code is None:
                 import time
                 time.sleep(0.5)
@@ -122,7 +139,7 @@ def get_refresh_token(client_secret_path):
             httpd.shutdown()
 
     if not authorization_code:
-        print("❌ Failed to get authorization code")
+        print("Failed to get authorization code")
         sys.exit(1)
 
     # Exchange code for refresh token
@@ -130,7 +147,7 @@ def get_refresh_token(client_secret_path):
         'code': authorization_code,
         'client_id': client_id,
         'client_secret': client_secret,
-        'redirect_uri': REDIRECT_URI,
+        'redirect_uri': redirect_uri,
         'grant_type': 'authorization_code'
     }
 
@@ -149,7 +166,7 @@ def get_refresh_token(client_secret_path):
 
     print("")
     print("=" * 60)
-    print("🎉 Success! Here are your credentials:")
+    print("Success! Here are your credentials:")
     print("=" * 60)
     print(f"GOOGLE_DRIVE_CLIENT_ID={client_id}")
     print(f"GOOGLE_DRIVE_CLIENT_SECRET={client_secret}")
@@ -173,7 +190,7 @@ if __name__ == '__main__':
 
     client_secret_path = sys.argv[1]
     if not os.path.exists(client_secret_path):
-        print(f"❌ File not found: {client_secret_path}")
+        print(f"File not found: {client_secret_path}")
         sys.exit(1)
 
     get_refresh_token(client_secret_path)
