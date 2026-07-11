@@ -1498,6 +1498,10 @@ class APIHandler(BaseHTTPRequestHandler):
                                 'projectDescription': project_description,
                                 'budgetYear': budget_year,
                                 'fileName': file_name,
+                                'savedFileName': unique_filename,
+                                'driveUrl': drive_result.get('url') if drive_result else None,
+                                'driveId': drive_result.get('id') if drive_result else None,
+                                'driveDownloadUrl': drive_result.get('download_url') if drive_result else None,
                                 'submittedAt': datetime.now().isoformat()
                             }
                         }
