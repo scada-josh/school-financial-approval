@@ -1173,6 +1173,58 @@ class APIHandler(BaseHTTPRequestHandler):
                 else:
                     self._send_json({'success': False, 'error': 'Invalid path'}, 400)
 
+            # Upload endpoints
+            elif path == '/api/uploads':
+                try:
+                    if not os.path.isdir(UPLOAD_DIR):
+                        self._send_json({'success': True, 'data': []})
+                        return
+
+                    files = []
+                    for filename in sorted(os.listdir(UPLOAD_DIR), reverse=True):
+                        file_path = os.path.join(UPLOAD_DIR, filename)
+                        if os.path.isfile(file_path):
+                            stat = os.stat(file_path)
+                            files.append({
+                                'filename': filename,
+                                'size': stat.st_size,
+                                'modified': datetime.fromtimestamp(stat.st_mtime).isoformat(),
+                                'url': f'/api/uploads/{urllib.parse.quote(filename)}'
+                            })
+                    self._send_json({'success': True, 'data': files})
+                except Exception as e:
+                    self._send_json({'success': False, 'error': str(e)}, 500)
+
+            elif path.startswith('/api/uploads/'):
+                filename = urllib.parse.unquote(path[len('/api/uploads/'):])
+                if not filename or '..' in filename or '~' in filename:
+                    self._send_json({'success': False, 'error': 'Invalid filename'}, 400)
+                    return
+
+                file_path = os.path.join(UPLOAD_DIR, filename)
+                real_file_path = os.path.realpath(file_path)
+                real_upload_dir = os.path.realpath(UPLOAD_DIR)
+                if not real_file_path.startswith(real_upload_dir):
+                    self._send_json({'success': False, 'error': 'Not found'}, 404)
+                    return
+
+                if not os.path.exists(file_path) or not os.path.isfile(file_path):
+                    self._send_json({'success': False, 'error': 'File not found'}, 404)
+                    return
+
+                content_type, _ = mimetypes.guess_type(file_path)
+                if content_type is None:
+                    content_type = 'application/octet-stream'
+
+                self.send_response(200)
+                self.send_header('Content-Type', content_type)
+                self.send_header('Content-Disposition', f'inline; filename="{filename}"')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+
+                with open(file_path, 'rb') as f:
+                    self.wfile.write(f.read())
+
             else:
                 self._send_json({'success': False, 'error': 'Not found'}, 404)
         

@@ -12,8 +12,7 @@ services:
         sync: false
       - key: GOOGLE_SERVICE_ACCOUNT_JSON
         sync: false
-    # Uncomment below if you need persistent disk for uploads
-    # disk:
-    #   name: uploads
-    #   mountPath: /opt/render/project/src/uploads
-    #   sizeGB: 1
+    disk:
+      name: uploads
+      mountPath: /opt/render/project/src/uploads
+      sizeGB: 1
