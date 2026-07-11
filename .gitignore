@@ -16,6 +16,7 @@ service-account*.json
 gen-lang-client-*.json
 *-d38efeabd270.json
 *-credentials.json
+*.bak
 
 # Data & Uploads
 uploads/temp/*

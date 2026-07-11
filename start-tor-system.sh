@@ -26,7 +26,8 @@ if [ ! -f "$API_SCRIPT" ]; then
 fi
 
 # Service account JSON path
-SERVICE_ACCOUNT_FILE="$SCRIPT_DIR/src/backend/config/gen-lang-client-0476777034-d38efeabd270.json"
+# SERVICE_ACCOUNT_FILE="$SCRIPT_DIR/src/backend/config/gen-lang-client-0476777034-d38efeabd270.json"
+SERVICE_ACCOUNT_FILE="$SCRIPT_DIR/src/backend/config/school-financial-approval-b41ec382935e.json"
 
 # Load service account JSON if exists
 if [ -f "$SERVICE_ACCOUNT_FILE" ]; then
