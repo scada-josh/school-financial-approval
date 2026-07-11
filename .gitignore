@@ -47,3 +47,4 @@ Thumbs.db
 # Tests
 tests/unit/__pycache__/
 tests/integration/__pycache__/
+src/backend/config/*.json
