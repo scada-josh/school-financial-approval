@@ -8,6 +8,10 @@ using Python built-in http.server
 Sheets:
   - TOR_Config: ประเภทโครงการและหัวข้อ TOR
   - Projects: รายการโครงการและสถานะการอนุมัติ
+  - TOR_Submissions: ประวัติการส่ง TOR
+
+Uploads:
+  - Files are stored in Google Drive folder
 
 Endpoints:
   # TOR Config
@@ -24,6 +28,10 @@ Endpoints:
   PUT    /api/tracking/projects/{id}         - Update project
   DELETE /api/tracking/projects/{id}         - Delete project
   GET    /api/tracking/years                 - List budget years
+
+  # Uploads
+  GET    /api/uploads                   - List uploaded files
+  GET    /api/uploads/{filename}       - Download uploaded file (or redirect to Google Drive)
 """
 
 import json
@@ -35,6 +43,8 @@ import mimetypes
 from datetime import datetime
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from google.oauth2 import service_account
+from google.oauth2.credentials import Credentials as OAuthCredentials
+from google.auth.transport.requests import Request as GoogleAuthRequest
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
@@ -49,6 +59,8 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 SPREADSHEET_ID = os.environ.get('SPREADSHEET_ID', '1Plh_0AodTomKLyP8zrBp9FOriHXVm_uGYIO4TVHSozg')
 SERVICE_ACCOUNT_EMAIL = os.environ.get('GOOGLE_CLIENT_EMAIL', 'opencode-gsheet@gen-lang-client-0476777034.iam.gserviceaccount.com')
 PRIVATE_KEY = os.environ.get('GOOGLE_PRIVATE_KEY')
+GOOGLE_DRIVE_FOLDER_ID = os.environ.get('GOOGLE_DRIVE_FOLDER_ID', '16kDckxG7XTbbOwv4LMe5XpWCYiXYh6Zv')
+
 if not PRIVATE_KEY:
     # Service account JSON is preferred; this is a fallback
     PRIVATE_KEY = ''
@@ -57,6 +69,15 @@ if not PRIVATE_KEY:
 if not os.environ.get('GOOGLE_SERVICE_ACCOUNT_JSON') and not os.environ.get('GOOGLE_PRIVATE_KEY'):
     print("⚠️  Warning: No Google credentials found in environment variables.")
     print("   Please set GOOGLE_SERVICE_ACCOUNT_JSON or GOOGLE_PRIVATE_KEY before running.")
+
+# Google API Scopes
+SCOPES = [
+    'https://www.googleapis.com/auth/spreadsheets',
+    'https://www.googleapis.com/auth/drive'
+]
+
+# Cache for credentials and services
+_drive_service_cache = None
 
 class GoogleSheetsClient:
     """Client for Google Sheets operations"""
@@ -90,9 +111,109 @@ class GoogleSheetsClient:
         
         credentials = service_account.Credentials.from_service_account_info(
             account_info,
-            scopes=['https://www.googleapis.com/auth/spreadsheets']
+            scopes=SCOPES
         )
         return build('sheets', 'v4', credentials=credentials)
+
+    def _get_drive_service(self):
+        """Get Google Drive service using OAuth or service account"""
+        global _drive_service_cache
+        if _drive_service_cache is not None:
+            return _drive_service_cache
+
+        # Try OAuth credentials first (for personal Google Drive)
+        refresh_token = os.environ.get('GOOGLE_DRIVE_REFRESH_TOKEN')
+        client_id = os.environ.get('GOOGLE_DRIVE_CLIENT_ID')
+        client_secret = os.environ.get('GOOGLE_DRIVE_CLIENT_SECRET')
+
+        if refresh_token and client_id and client_secret:
+            try:
+                credentials = OAuthCredentials(
+                    None,
+                    refresh_token=refresh_token,
+                    token_uri='https://oauth2.googleapis.com/token',
+                    client_id=client_id,
+                    client_secret=client_secret,
+                    scopes=['https://www.googleapis.com/auth/drive']
+                )
+                credentials.refresh(GoogleAuthRequest())
+                _drive_service_cache = build('drive', 'v3', credentials=credentials)
+                return _drive_service_cache
+            except Exception as e:
+                print(f"⚠️  OAuth Drive credentials failed: {e}")
+                print("   Falling back to service account...")
+
+        # Fallback to service account
+        service_account_json = os.environ.get('GOOGLE_SERVICE_ACCOUNT_JSON')
+        if service_account_json:
+            account_info = json.loads(service_account_json)
+        else:
+            account_info = {
+                "type": "service_account",
+                "project_id": os.environ.get('GOOGLE_PROJECT_ID', 'gen-lang-client-0476777034'),
+                "private_key_id": os.environ.get('GOOGLE_PRIVATE_KEY_ID', 'key-id'),
+                "private_key": PRIVATE_KEY,
+                "client_email": SERVICE_ACCOUNT_EMAIL,
+                "client_id": os.environ.get('GOOGLE_CLIENT_ID', 'client-id'),
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+            }
+
+        credentials = service_account.Credentials.from_service_account_info(
+            account_info,
+            scopes=SCOPES
+        )
+        _drive_service_cache = build('drive', 'v3', credentials=credentials)
+        return _drive_service_cache
+
+    def upload_to_drive(self, filename, file_bytes, mime_type=None):
+        """Upload a file to the configured Google Drive folder"""
+        if mime_type is None:
+            mime_type, _ = mimetypes.guess_type(filename)
+            if mime_type is None:
+                mime_type = 'application/octet-stream'
+
+        drive_service = self._get_drive_service()
+
+        file_metadata = {
+            'name': filename,
+            'parents': [GOOGLE_DRIVE_FOLDER_ID]
+        }
+
+        from googleapiclient.http import MediaIoBaseUpload
+        import io
+
+        fh = io.BytesIO(file_bytes)
+        media = MediaIoBaseUpload(fh, mimetype=mime_type, resumable=True)
+
+        file = drive_service.files().create(
+            body=file_metadata,
+            media_body=media,
+            fields='id, name, webViewLink, webContentLink, mimeType, size',
+            supportsAllDrives=True
+        ).execute()
+
+        return {
+            'id': file.get('id'),
+            'name': file.get('name'),
+            'url': file.get('webViewLink'),
+            'download_url': file.get('webContentLink'),
+            'mime_type': file.get('mimeType'),
+            'size': file.get('size')
+        }
+
+    def get_drive_file(self, file_id):
+        """Get metadata and download URL for a Drive file"""
+        drive_service = self._get_drive_service()
+        file = drive_service.files().get(file_id=file_id, fields='id, name, webViewLink, webContentLink, mimeType, size', supportsAllDrives=True).execute()
+        return {
+            'id': file.get('id'),
+            'name': file.get('name'),
+            'url': file.get('webViewLink'),
+            'download_url': file.get('webContentLink'),
+            'mime_type': file.get('mimeType'),
+            'size': file.get('size')
+        }
     
     # ============ TOR Config Methods ============
     
@@ -1183,13 +1304,29 @@ class APIHandler(BaseHTTPRequestHandler):
                     files = []
                     for filename in sorted(os.listdir(UPLOAD_DIR), reverse=True):
                         file_path = os.path.join(UPLOAD_DIR, filename)
-                        if os.path.isfile(file_path):
+                        if os.path.isfile(file_path) and not filename.endswith('.json'):
                             stat = os.stat(file_path)
+
+                            # Check for Drive metadata
+                            metadata_path = os.path.join(UPLOAD_DIR, f"{filename}.json")
+                            drive_url = None
+                            drive_id = None
+                            if os.path.exists(metadata_path):
+                                try:
+                                    with open(metadata_path, 'r', encoding='utf-8') as f:
+                                        meta = json.load(f)
+                                        drive_url = meta.get('driveUrl')
+                                        drive_id = meta.get('driveId')
+                                except Exception:
+                                    pass
+
                             files.append({
                                 'filename': filename,
                                 'size': stat.st_size,
                                 'modified': datetime.fromtimestamp(stat.st_mtime).isoformat(),
-                                'url': f'/api/uploads/{urllib.parse.quote(filename)}'
+                                'url': f'/api/uploads/{urllib.parse.quote(filename)}',
+                                'driveUrl': drive_url,
+                                'driveId': drive_id
                             })
                     self._send_json({'success': True, 'data': files})
                 except Exception as e:
@@ -1208,6 +1345,23 @@ class APIHandler(BaseHTTPRequestHandler):
                     self._send_json({'success': False, 'error': 'Not found'}, 404)
                     return
 
+                # Check for Drive metadata first
+                metadata_path = os.path.join(UPLOAD_DIR, f"{filename}.json")
+                if os.path.exists(metadata_path):
+                    try:
+                        with open(metadata_path, 'r', encoding='utf-8') as f:
+                            meta = json.load(f)
+                            drive_url = meta.get('driveUrl')
+                            if drive_url:
+                                self.send_response(302)
+                                self.send_header('Location', drive_url)
+                                self.send_header('Access-Control-Allow-Origin', '*')
+                                self.end_headers()
+                                return
+                    except Exception as e:
+                        print(f"Warning: Could not read Drive metadata: {e}")
+
+                # Fallback: serve local file
                 if not os.path.exists(file_path) or not os.path.isfile(file_path):
                     self._send_json({'success': False, 'error': 'File not found'}, 404)
                     return
@@ -1291,10 +1445,23 @@ class APIHandler(BaseHTTPRequestHandler):
                 unique_filename = f"{timestamp}_{safe_name}"
                 file_path = os.path.join(UPLOAD_DIR, unique_filename)
                 
-                # Decode and save file
+                # Decode file
                 file_bytes = base64.b64decode(file_data)
-                with open(file_path, 'wb') as f:
-                    f.write(file_bytes)
+                
+                # Upload to Google Drive
+                drive_result = None
+                try:
+                    drive_result = sheets_client.upload_to_drive(unique_filename, file_bytes)
+                    print(f"✅ Uploaded to Drive: {drive_result.get('id')}")
+                except Exception as e:
+                    print(f"⚠️  Failed to upload to Drive: {e}")
+                
+                # Save local backup
+                try:
+                    with open(file_path, 'wb') as f:
+                        f.write(file_bytes)
+                except Exception as e:
+                    print(f"Warning: Could not save local backup: {e}")
                 
                 # Check n8n settings from active profile
                 n8n_enabled = False
@@ -1359,6 +1526,9 @@ class APIHandler(BaseHTTPRequestHandler):
                 
                 # Save to Google Sheet TOR_Submissions
                 submitted_at = datetime.now().isoformat()
+                drive_url = drive_result.get('url') if drive_result else None
+                drive_id = drive_result.get('id') if drive_result else None
+                drive_download_url = drive_result.get('download_url') if drive_result else None
                 
                 try:
                     # Generate submission ID once
@@ -1370,7 +1540,7 @@ class APIHandler(BaseHTTPRequestHandler):
                         'fileName': unique_filename,
                         'status': 'อัพโหลดสำเร็จ',
                         'note': 'ส่ง TOR ใหม่' if is_new_project else '',
-                        'filePath': file_path,
+                        'filePath': drive_url or file_path,
                         'submittedAt': submitted_at,
                         'channel': 'Default'
                     })
@@ -1385,7 +1555,7 @@ class APIHandler(BaseHTTPRequestHandler):
                             'fileName': unique_filename,
                             'status': webhook_status,
                             'note': 'ส่งผ่าน n8n Workflow',
-                            'filePath': file_path,
+                            'filePath': drive_url or file_path,
                             'submittedAt': submitted_at,
                             'channel': channel
                         }, submission_id=submission_id)
@@ -1408,10 +1578,13 @@ class APIHandler(BaseHTTPRequestHandler):
                     'filePath': file_path,
                     'fileSize': len(file_bytes),
                     'submittedAt': submitted_at,
-                    'submissionId': submission_id
+                    'submissionId': submission_id,
+                    'driveId': drive_id,
+                    'driveUrl': drive_url,
+                    'driveDownloadUrl': drive_download_url
                 }
                 
-                metadata_path = os.path.join(UPLOAD_DIR, f"{timestamp}_{first_name}_{last_name}.json")
+                metadata_path = os.path.join(UPLOAD_DIR, f"{unique_filename}.json")
                 with open(metadata_path, 'w', encoding='utf-8') as f:
                     json.dump(metadata, f, ensure_ascii=False, indent=2)
                 
@@ -1422,7 +1595,9 @@ class APIHandler(BaseHTTPRequestHandler):
                         'fileName': unique_filename,
                         'fileSize': len(file_bytes),
                         'projectName': project_name,
-                        'submissionId': submission_id
+                        'submissionId': submission_id,
+                        'driveUrl': drive_url,
+                        'driveId': drive_id
                     }
                 }, 201)
             
